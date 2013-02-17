@@ -2,7 +2,7 @@ package codagehuffman;
 
 public class CodageHuffman {
 
-	private Map <String, byte> dictio = new HashMap <String,byte>();
+	private Map <String, String> dictio = new HashTable <String,String>();
 	//attribute de type static Map pour lier un symbole à son code
 	//ATTENTION CARACTERE UNIQUE
 	
