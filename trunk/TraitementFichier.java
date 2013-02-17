@@ -10,11 +10,11 @@ import java.util.Hashtable;
 
 abstract class TraitementFichier {
     
-	public Hashtable lire(String nomFichier){
+	public Hashtable<Integer,ArbreHuffman> lire(String nomFichier){
             try{
                 BufferedReader fichierTexte = new BufferedReader(new FileReader(new File(nomFichier)));
                 int caractereLuCodeAscii;
-                Hashtable arbreHuffmanLettresFichier = new Hashtable();
+                Hashtable<Integer,ArbreHuffman> arbreHuffmanLettresFichier = new Hashtable();
 
                 if (fichierTexte == null)
                         throw new FileNotFoundException("Le fichier "+nomFichier+" n'a pas ete trouve:");
@@ -23,7 +23,7 @@ abstract class TraitementFichier {
                     if(!arbreHuffmanLettresFichier.containsKey(caractereLuCodeAscii)){
                         arbreHuffmanLettresFichier.put(caractereLuCodeAscii,new ArbreHuffman((char)caractereLuCodeAscii));
                     }else{
-                        ArbreHuffman arbreHuffman = (ArbreHuffman)arbreHuffmanLettresFichier.get(caractereLuCodeAscii);
+                        ArbreHuffman arbreHuffman = arbreHuffmanLettresFichier.get(caractereLuCodeAscii);
                         arbreHuffman.incrementerPriorite();
                     }
                 }

@@ -1,6 +1,7 @@
 package codagehuffman;
 
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.PriorityQueue;
 
 public class CodageHuffman {
@@ -19,7 +20,7 @@ public class CodageHuffman {
 /*----------------------METHODES PRINCIPALES-----------------------*/
     public void compresserFichier(String nomFichier){
         TraitementFichier lectureFichier = new TraitementFichier() {};    
-        Collection arbreHuffmanLettresFichier = (Collection)lectureFichier.lire(nomFichier);
+        Hashtable<Integer,ArbreHuffman> arbreHuffmanLettresFichier = lectureFichier.lire(nomFichier);
         
         try{
             fileArbres = new PriorityQueue<ArbreHuffman>(arbreHuffmanLettresFichier);
