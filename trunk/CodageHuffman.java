@@ -9,6 +9,8 @@ public class CodageHuffman {
 	private Queue <Arbre> priori = new PriorityQueue <Arbre>();
 	//attribut de type static Queue pour stocker les arbres
 	
+	//RAPPEL FILS GAUCHE = 0 / FILS DROIT = 1
+	
 /*----------------------METHODES PRINCIPALES-----------------------*/
 	public void compresserFichier(){
 		//---LIRE LE FICHIER SOURCE
