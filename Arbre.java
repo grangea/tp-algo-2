@@ -1,6 +1,6 @@
 package codagehuffman;
 
-abstract class Arbre {
+abstract class Arbre<E> {
 	
 protected Noeud<E> racine;
 	
