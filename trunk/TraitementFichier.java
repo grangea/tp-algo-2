@@ -1,5 +1,12 @@
 package codagehuffman;
 
-public class TraitementFichier {
+abstract class TraitementFichier {
     
+	public void lire(){
+		
+	}
+	
+	public void ecrire(){
+		
+	}
 }
