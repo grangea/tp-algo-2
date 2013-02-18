@@ -1,43 +1,52 @@
 package codagehuffman;
 
-import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.Comparator;
 
 public class CodageHuffman {
 
-    private PriorityQueue<ArbreHuffman> fileArbres;
-    
-    //private HashTable <String, byte> dictio = new HashMap <String,byte>();
-    //attribute de type static Map pour lier un symbole ï¿½ son code
-    //ATTENTION CARACTERE UNIQUE
-
-    //private Queue <Arbre> priori = new PriorityQueue <Arbre>();
-    //attribut de type static Queue pour stocker les arbres
+    private Queue<ArbreHuffman<String>> fileArbres = new PriorityQueue<ArbreHuffman<String>>(256,new Comparator<ArbreHuffman<String>>() {
+        public int compare(ArbreHuffman<String> a1, ArbreHuffman<String> a2) {
+    			if(a1.getPriorite() > a2.getPriorite()){
+    				return 1 ;
+    			}
+    			else{
+    				return -1 ;
+    			}
+        }
+    });
+   
+    //private Map <String, byte> dictio = new Map <String,byte>();
+    //attribute de type static Map pour lier un symbole a son code
+    //ATTENTION CARACTERE UNIQUE MAIS PEUT ETRE VIDE
 
     //RAPPEL FILS GAUCHE = 0 / FILS DROIT = 1
 
 /*----------------------METHODES PRINCIPALES-----------------------*/
-    public void compresserFichier(String nomFichier){
-        TraitementFichier lectureFichier = new TraitementFichier() {};    
-        Hashtable<Integer,ArbreHuffman> arbreHuffmanLettresFichier = lectureFichier.lire(nomFichier);
+    public void compresserFichier(String nomFichier){   
+        Hashtable<Integer, ArbreHuffman<String>> arbreHuffmanLettresFichier = TraitementFichier.lire(nomFichier);
         
         try{
-            fileArbres = new PriorityQueue<ArbreHuffman>(arbreHuffmanLettresFichier);
+        	
+        	CodageHuffman.affichageHashTable(arbreHuffmanLettresFichier);
+        	if (!arbreHuffmanLettresFichier.isEmpty()){
+        		System.out.println("Taille de l'arbre : " +arbreHuffmanLettresFichier.size());
+        	}
+            fileArbres.addAll(arbreHuffmanLettresFichier.values());
             
-            if(fileArbres == null){
+            if(fileArbres.isEmpty()){
                 throw new Exception();
             }else{
-                
+            	 System.out.println("Taille file : "+fileArbres.size());
             }
         }catch(Exception e){
                 System.out.println("Une erreur s'est produite.");
         }
-        //---LIRE LE FICHIER SOURCE
-            //lire les caracteres du fichier a compresser
-            //les ajouter dans la queue en tant que Noeud
-            //modifier la priorite lorsque plusieurs occurences =>regarder pour chaque caractere si deja present!
-
+        	
             //--CREER ARBRE DE HUFFMAN 
             //tq priorityqueue a plus d'un element, fusion entre les arbres
 
@@ -62,11 +71,23 @@ public class CodageHuffman {
 
 
 /*----------------------METHODES SUBORDONNEES-----------------------*/	
+    static private void affichageHashTable(Hashtable<Integer, ArbreHuffman<String>> arbreH){
 
+        Set<Integer> keySet=arbreH.keySet();
+        Iterator it=keySet.iterator();
 
+        while (it.hasNext()){
+        Object key=it.next();
+        Noeud<String> n = arbreH.get(key).racine;
+        System.out.println("clé : "+(Integer)key );
+        		//- valeur : "n.getValeur().toString()+ " - priorité: "+ arbreH.get(key).getPriorite() );
+        }
+    }
 
     public static void main(String[] args) {
         CodageHuffman codagehuffman = new CodageHuffman();
-        codagehuffman.compresserFichier("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt");
+        codagehuffman.compresserFichier("C:/Users/Lutine/Documents/fichierTexte.txt");
+
+        //codagehuffman.compresserFichier("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt");
     }
 }
