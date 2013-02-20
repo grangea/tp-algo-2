@@ -6,38 +6,50 @@ import codagehuffman.Noeud;
 public class ArbreHuffman<E extends Comparable<E>> extends ArbreBinaire<E> {
 
 	// Un arbre de huffman est un type d'arbre binaire mais a en plus une
-	// priorité
+	// prioritï¿½
 
 	private int priorite;
 
-	/** Cree un arbre de huffman vide de priorité 0 */
+	/** Cree un arbre de huffman vide de prioritï¿½ 0 */
 	public ArbreHuffman() {
-		this.racine = null;
-		this.priorite = 0;
+            this.racine = null;
+            this.priorite = 0;
 	}
 
-	/** Cree un arbre de huffman contenant une unique valeur de priorité 1 */
+	/** Cree un arbre de huffman contenant une unique valeur de prioritï¿½ 1 */
 	public ArbreHuffman(E val) {
-		Noeud<E> racine = new Noeud<E>(val);
-		this.racine = racine;
-		this.priorite = 1;
+            Noeud<E> racine = new Noeud<E>(val);
+            this.racine = racine;
+            this.priorite = 1;
 	}
 
-	/** Cree un arbre de huffman contenant une unique valeur de priorité donnée */
+	/** Cree un arbre de huffman contenant une unique valeur de prioritï¿½ donnï¿½e */
 	public ArbreHuffman(E val, int priorite) {
-		Noeud<E> racine = new Noeud<E>(val);
-		this.racine = racine;
-		this.priorite = priorite;
+            Noeud<E> racine = new Noeud<E>(val);
+            this.racine = racine;
+            this.priorite = priorite;
+	}
+        
+        public ArbreHuffman(Noeud<E> racine, int priorite) {
+            this.racine = racine;
+            this.priorite = priorite;
 	}
 
-	/** Renvoie la priorité de l'arbre de huffman */
+	/** Renvoie la prioritï¿½ de l'arbre de huffman */
 	public int getPriorite() {
-		return this.priorite;
+            return this.priorite;
 	}
 
-	/** Incrémente de un la priorité de l'arbre de huffman */
+	/** Incrï¿½mente de un la prioritï¿½ de l'arbre de huffman */
 	public void incrementerPriorite() {
-		this.priorite++;
+            this.priorite++;
+	}
+        
+        public int nbNoeuds() {
+		if (estVide())
+			return 0;
+
+		return racine.nbNoeudsHuffman();
 	}
 
 }
