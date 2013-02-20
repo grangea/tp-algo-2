@@ -11,7 +11,7 @@ abstract class Arbre<E extends Comparable<E>> {
 		this.racine = null;
 	}
 
-	/** Cree un arbre avec une racine donnée */
+	/** Cree un arbre avec une racine donnï¿½e */
 	public Arbre(E val) {
 		this.racine = new Noeud<E>(val);
 	}
@@ -45,12 +45,19 @@ abstract class Arbre<E extends Comparable<E>> {
 		return racine.estPresent(e);
 	}
 
-	/** Renvoie une string contenant l'affichage préfixé de l'arbre */
+	/** Renvoie une string contenant l'affichage prï¿½fixï¿½ de l'arbre */
 	public String affichagePrefixeRecursif() {
 		if (estVide())
 			return "";
 
 		return racine.affichagePrefixeRecursif();
+	}
+        
+        public String remplissageTableauPrefixeRecursif() {
+		if (estVide())
+			return "";
+
+		return racine.remplissageTableauPrefixeRecursif("", -1);
 	}
 
 }

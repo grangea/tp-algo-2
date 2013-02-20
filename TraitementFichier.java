@@ -10,15 +10,15 @@ import java.util.Hashtable;
 abstract class TraitementFichier {
 
 	/** Lit les caracteres du fichier a compresser
-	 *  Ajoute chaque caractere dans la Hashtable si non présent
+	 *  Ajoute chaque caractere dans la Hashtable si non prï¿½sent
 	 *  Sinon modifie leur priorite*/
-	public static Hashtable<Integer, ArbreHuffman<String>> lire(
+            public static Hashtable<Integer, ArbreHuffman<Character>> lire(
 			String nomFichier) {
 		try {
 			BufferedReader fichierTexte = new BufferedReader(new FileReader(
 					new File(nomFichier)));
 			int caractereLuCodeAscii;
-			Hashtable<Integer, ArbreHuffman<String>> arbreHuffmanLettresFichier = new Hashtable<Integer, ArbreHuffman<String>>();
+			Hashtable<Integer, ArbreHuffman<Character>> arbreHuffmanLettresFichier = new Hashtable<Integer, ArbreHuffman<Character>>();
 
 			if (fichierTexte == null)
 				throw new FileNotFoundException("Le fichier " + nomFichier
@@ -30,7 +30,7 @@ abstract class TraitementFichier {
 					arbreHuffmanLettresFichier.put(caractereLuCodeAscii,
 							new ArbreHuffman((char) caractereLuCodeAscii));
 				} else {
-					ArbreHuffman<String> arbreHuffman = arbreHuffmanLettresFichier
+					ArbreHuffman<Character> arbreHuffman = arbreHuffmanLettresFichier
 							.get(caractereLuCodeAscii);
 					arbreHuffman.incrementerPriorite();
 				}

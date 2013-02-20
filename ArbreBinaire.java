@@ -22,8 +22,7 @@ public class ArbreBinaire<E extends Comparable<E>> extends Arbre<E> {
 	 * Cree un arbre a partir d'une valeur racine et de 2 arbres, qui deviennent
 	 * les fils g et d du noeud cree.
 	 */
-	public ArbreBinaire(E val, ArbreBinaire<E> filsGauche,
-			ArbreBinaire<E> filsDroit) {
+	public ArbreBinaire(E val, ArbreBinaire<E> filsGauche, ArbreBinaire<E> filsDroit) {
 		Noeud<E> noeudFilsGauche = null;
 		Noeud<E> noeudFilsDroit = null;
 

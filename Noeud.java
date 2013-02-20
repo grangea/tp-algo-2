@@ -83,18 +83,58 @@ public class Noeud<E extends Comparable<E>> {
 		}
 		return (1 + nombreNoeudsSousArbreGauche + nombreNoeudsSousArbreDroit);
 	}
-
-	public String affichagePrefixeRecursif() {
-		String s = this.val + " ";
+        
+        public int nbNoeudsHuffman() {
+		int nombreNoeudsSousArbreGauche = 0;
+		int nombreNoeudsSousArbreDroit = 0;
 
 		if (this.filsGauche != null) {
-			s += this.filsGauche.affichagePrefixeRecursif();
+			nombreNoeudsSousArbreGauche = filsGauche.nbNoeudsHuffman();
 		}
 		if (this.filsDroit != null) {
-			s += this.filsDroit.affichagePrefixeRecursif();
+			nombreNoeudsSousArbreDroit = filsDroit.nbNoeudsHuffman();
 		}
-
-		return s;
+                if(val != null){ // Un arbre de Huffman peut contenir des racines dont la valeur est nulle
+                    return (1 + nombreNoeudsSousArbreGauche + nombreNoeudsSousArbreDroit);
+                }else{
+                    return (nombreNoeudsSousArbreGauche + nombreNoeudsSousArbreDroit);
+                }
 	}
+
+	public String affichagePrefixeRecursif() {
+            String s = this.val + " ";
+
+            if (this.filsGauche != null) {
+                    s += this.filsGauche.affichagePrefixeRecursif();
+            }
+            if (this.filsDroit != null) {
+                    s += this.filsDroit.affichagePrefixeRecursif();
+            }
+
+            return s;
+	}
+        
+        public String remplissageTableauPrefixeRecursif(String chaine, int hauteur) {
+            String s = "";
+            String s2 = "";
+            int h = hauteur+1;
+            
+            if(this.filsGauche == null && this.filsDroit == null && this.val != null){ // feuille
+                s2 = chaine;
+                s2 += "|"+val+"|"+h+"|";
+            }
+            if(this.filsGauche != null) {
+                s = chaine;
+                s += "0"; 
+                s2 += filsGauche.remplissageTableauPrefixeRecursif(s,h);
+            }
+            if(this.filsDroit != null) {
+                s = chaine;
+                s += "1"; 
+                s2 += filsDroit.remplissageTableauPrefixeRecursif(s,h);
+            }
+            
+            return s2;
+        }
 
 }
