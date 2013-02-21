@@ -79,9 +79,16 @@ public class TraitementFichier {
                 BufferedReader fichierTexte = new BufferedReader(new FileReader(
                                             new File("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt"))); // A changer pour le nom du fichier
 
+                /*String message = fichierTexte.readLine();
+                for(int i=0;i<message.length();i++){
+                    chaineAecrire += ht.get(message.charAt(i));
+                }*/
+                
                 while ((caractereLuCodeAscii = fichierTexte.read()) != -1) {
                     chaineAecrire += ht.get((char)caractereLuCodeAscii);
                 }
+                
+                fichierTexte.close();
             }catch(IOException e){
                 //blabla
             }
