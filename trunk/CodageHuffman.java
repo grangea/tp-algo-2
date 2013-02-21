@@ -26,7 +26,7 @@ public int compare(ArbreHuffman<Character> a1,
 	protected Comparator<ArbreHuffman<Character>> comparator = new KeyComparator<ArbreHuffman<Character>>();
 	//PAS TOP DE METTRE UNE CAPACITE A REVOIR
 	protected PriorityQueue<ArbreHuffman<Character>> fileArbres = new PriorityQueue<ArbreHuffman<Character>>(1000,comparator);
-	protected TraitementFichier tf ;
+	protected TraitementFichier tf = new TraitementFichier();
 	protected String nomFichier ;
 	
 	/*----------------------METHODES PRINCIPALES-----------------------*/
@@ -52,7 +52,7 @@ public int compare(ArbreHuffman<Character> a1,
 			
 			arbre = creationArbreHuffman();
 			if(arbre!=null){
-				String entete = arbre.remplissageTableauPrefixeRecursif();
+				String entete = arbre.remplissageTableauPrefixeRecursif(tf.codageLettres);
 				tf.ecrireFichierACompresser(entete);
 			}
 			

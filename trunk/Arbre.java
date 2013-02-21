@@ -1,5 +1,7 @@
 package codagehuffman;
 
+import java.util.Hashtable;
+
 import codagehuffman.Noeud;
 
 abstract class Arbre<E extends Comparable<E>> {
@@ -38,11 +40,11 @@ abstract class Arbre<E extends Comparable<E>> {
 	}
 
 	/** Renvoie une string contenant l'affichage prefixe de l'arbre */ 
-        public String remplissageTableauPrefixeRecursif() {
+        public String remplissageTableauPrefixeRecursif(Hashtable<String,String> ht) {
 		if (estVide())
 			return "";
 
-		return racine.remplissageTableauPrefixeRecursif("", -1);
+		return racine.remplissageTableauPrefixeRecursif(ht,"", -1);
 	}
 
 }
