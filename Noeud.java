@@ -1,5 +1,7 @@
 package codagehuffman;
 
+import java.util.Hashtable;
+
 import codagehuffman.Noeud;
 
 public class Noeud<E extends Comparable<E>> {
@@ -99,7 +101,7 @@ public class Noeud<E extends Comparable<E>> {
 	}
 
 	/** Renvoie une chaine de caractère contenant les valeurs contenues sur le noeud et ses fils */
-	public String remplissageTableauPrefixeRecursif(String chaine, int hauteur) {
+	public String remplissageTableauPrefixeRecursif(Hashtable<String, String> ht, String chaine, int hauteur) {
 		String s = "";
 		String s2 = "";
 		int h = hauteur + 1;
@@ -108,19 +110,21 @@ public class Noeud<E extends Comparable<E>> {
 				&& this.val != null) { // feuille
 			s2 = chaine;
 			s2 += "|" + val + "|" + h + "|";
+			ht.put(this.val.toString(),chaine);
 		}
 		if (this.filsGauche != null) {
 			s = chaine;
 			s += "0";
-			s2 += filsGauche.remplissageTableauPrefixeRecursif(s, h);
+			s2 += filsGauche.remplissageTableauPrefixeRecursif(ht,s, h);
 		}
 		if (this.filsDroit != null) {
 			s = chaine;
 			s += "1";
-			s2 += filsDroit.remplissageTableauPrefixeRecursif(s, h);
+			s2 += filsDroit.remplissageTableauPrefixeRecursif(ht,s, h);
 		}
 
 		return s2;
 	}
+	
 
 }
