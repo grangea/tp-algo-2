@@ -1,141 +1,122 @@
 package codagehuffman;
 
-import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Set;
 import java.util.Comparator;
 
 public class CodageHuffman {
-    
-    public class KeyComparator<E> implements Comparator<ArbreHuffman<Character>> {
 
-        @Override
-        public int compare(ArbreHuffman<Character> a1, ArbreHuffman<Character> a2) {
-            if(a1.getPriorite() > a2.getPriorite())
-                return 1;
-            else if(a1.getPriorite() < a2.getPriorite())
-                return -1;
-            else
-                return 0;
-        }
+	public class KeyComparator<E> implements
+	Comparator<ArbreHuffman<Character>> {
 
-   }
-    
-    /*private Queue<ArbreHuffman<Character>> fileArbres = new PriorityQueue<ArbreHuffman<Character>>(256,new Comparator<ArbreHuffman<Character>>() {
-        public int compare(ArbreHuffman<String> a1, ArbreHuffman<String> a2) {
-    			if(a1.getPriorite() > a2.getPriorite()){
-    				return 1 ;
-    			}
-    			else{
-    				return -1 ;
-    			}
-        }
-    });*/
- 
-   
-    //private Map <String, byte> dictio = new Map <String,byte>();
-    //attribute de type static Map pour lier un symbole a son code
-    //ATTENTION CARACTERE UNIQUE MAIS PEUT ETRE VIDE
+@Override
+public int compare(ArbreHuffman<Character> a1,
+		ArbreHuffman<Character> a2) {
+	if (a1.getPriorite() > a2.getPriorite())
+		return 1;
+	else if (a1.getPriorite() < a2.getPriorite())
+		return -1;
+	else
+		return 0;
+}
 
-    //RAPPEL FILS GAUCHE = 0 / FILS DROIT = 1
+}
+	protected Comparator<ArbreHuffman<Character>> comparator = new KeyComparator<ArbreHuffman<Character>>();
+	//PAS TOP DE METTRE UNE CAPACITE A REVOIR
+	protected PriorityQueue<ArbreHuffman<Character>> fileArbres = new PriorityQueue<ArbreHuffman<Character>>(1000,comparator);
+	protected TraitementFichier tf ;
+	protected String nomFichier ;
+	
+	/*----------------------METHODES PRINCIPALES-----------------------*/
+	public CodageHuffman(String nomFichier){
+		this.nomFichier=nomFichier;
+	}
+	
+	public void compresserFichier() {
+		ArbreHuffman<Character> arbre = null;
+		tf.lireFichierACompresser(nomFichier);
 
-/*----------------------METHODES PRINCIPALES-----------------------*/
-    public void compresserFichier(String nomFichier){ 
-        Comparator<ArbreHuffman<Character>> comparator = new KeyComparator<ArbreHuffman<Character>>();
-        PriorityQueue<ArbreHuffman<Character>> fileArbres = new PriorityQueue<ArbreHuffman<Character>>(1000,comparator);
-        
-        TraitementFichier tf = new TraitementFichier();
-        tf.lireDecompresse(nomFichier);
-        
-        ArbreHuffman<Character> a1 = null;
-        ArbreHuffman<Character> a2 = null;
-        ArbreHuffman<Character> a3 = null;
-        Noeud racine;
-        
-        
-        
-        try{        	
-            CodageHuffman.affichageHashTable(tf.arbreHuffmanLettresFichier);
-            if (!tf.arbreHuffmanLettresFichier.isEmpty()){
-                    System.out.println("Taille de l'arbre : " +tf.arbreHuffmanLettresFichier.size());
-            }
-            fileArbres.addAll(tf.arbreHuffmanLettresFichier.values());
-            
-            if(fileArbres.isEmpty()){
-                throw new Exception();
-            }else{
-            	 System.out.println("Taille file : "+fileArbres.size());
-            }            
-            
-            while(!fileArbres.isEmpty()){
-                // On récupère l'element avec le poids le plus faible donc le plus prioritaire
-                a1 = fileArbres.poll();
-                
-                if(!fileArbres.isEmpty()){ // Il restait au moins deux elements
-                    // On récupère l'element avec le poids le plus faible donc le plus prioritaire                   
-                    a2 = fileArbres.poll();                                       
-                    
-                    // On crée le nouvel arbre
-                    racine = new Noeud(null, a1.racine, a2.racine);
-                    a3 = new ArbreHuffman<Character>(racine, a1.getPriorite()+a2.getPriorite());
-                    fileArbres.add(a3);
-                }else{ // Il restait plus qu'un element
-                    break;
-                } 
-            }
-        }catch(Exception e){
-            //System.out.println("Une erreur s'est produite.");
-            System.out.println(e.getMessage());
-        }
-        	
-        String entete = a1.remplissageTableauPrefixeRecursif();
-        tf.ecrireCompresse(entete);
-            //--CREER ARBRE DE HUFFMAN 
-            //tq priorityqueue a plus d'un element, fusion entre les arbres
+		try {
+			
+			fileArbres.addAll(tf.arbreHuffmanLettresFichier.values());
+			
+			if (fileArbres.isEmpty() && tf.arbreHuffmanLettresFichier.isEmpty()) {
+				throw new Exception();
+			} else {
+				System.out.println("Taille file : " + fileArbres.size());
+				System.out.println("Taille de l'arbre : "
+						+ tf.arbreHuffmanLettresFichier.size());
+			}
+			
+			arbre = creationArbreHuffman();
+			if(arbre!=null){
+				String entete = arbre.remplissageTableauPrefixeRecursif();
+				tf.ecrireFichierACompresser(entete);
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 
-            //---CODER LES CARACTERES
-            //determiner les codes des caracteres 
-            //les ajouter dans la map 
+	}
 
-            //--ENCODER LE FICHIER COMPRESSE
-            //creer en-tete avec symbole/longueur pour pouvoir refaire l'arbre DANS l'ORDRE OU ILS SONT RANGES DANS L'ARBRE => prefix�
-            //ecrire la suite de bits codant l'ensemble des caracteres du fichier d'origine	
-    }
+	public void decompresserFichier() {
+		// --DECODER L'ENTETE DU FICHIER
 
-    public void decompresserFichier(){
-            //--DECODER L'ENTETE DU FICHIER
-        TraitementFichier tf = new TraitementFichier();
-        tf.lireCompresse("fichierTexteCompresse.txt");
+		tf.lireFichierADecompresser("fichierTexteCompresse.txt");
 
-            //--GENERER ARBRE HUFFMAN
+		// --GENERER ARBRE HUFFMAN
 
-            //--DECODER LES BITS
+		// --DECODER LES BITS
 
-            //--REGENERER LE TEXTE
-    }
+		// --REGENERER LE TEXTE
+	}
 
+	/*----------------------METHODES SUBORDONNEES-----------------------*/
+	// METHODE A VIRER ---------------------
+	static private void affichageHashTable(
+			Hashtable<Integer, ArbreHuffman<Character>> arbreH) {
 
-/*----------------------METHODES SUBORDONNEES-----------------------*/	
-    static private void affichageHashTable(Hashtable<Integer, ArbreHuffman<Character>> arbreH){
+		Set<Integer> keySet = arbreH.keySet();
+		Iterator it = keySet.iterator();
 
-        Set<Integer> keySet=arbreH.keySet();
-        Iterator it=keySet.iterator();
+		while (it.hasNext()) {
+			Object key = it.next();
+			Noeud<Character> n = arbreH.get(key).racine;
+			System.out.println("cle : " + (Integer) key);
+			// - valeur : "n.getValeur().toString()+ " - priorit�: "+
+			// arbreH.get(key).getPriorite() );
+		}
+	}
 
-        while (it.hasNext()){
-        Object key=it.next();
-        Noeud<Character> n = arbreH.get(key).racine;
-        System.out.println("cle : "+(Integer)key );
-        		//- valeur : "n.getValeur().toString()+ " - priorit�: "+ arbreH.get(key).getPriorite() );
-        }
-    }
+	private ArbreHuffman<Character> creationArbreHuffman(){
 
-    public static void main(String[] args) {
-        CodageHuffman codagehuffman = new CodageHuffman();
-        //codagehuffman.compresserFichier("C:/Users/Lutine/Documents/fichierTexte.txt");
+		ArbreHuffman<Character> a1 = null;
+		ArbreHuffman<Character> a2 = null;
+		ArbreHuffman<Character> a3 = null;
+		Noeud<Character> nvelleracine = null;
+		
+		// tant que la priorityqueue a plus qu'un element, fusion entre
+		// les arbres
+		while (!fileArbres.isEmpty()) {
 
-        codagehuffman.compresserFichier("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt");
-    }
+			// On recupere l'element avec le poids le plus faible donc le
+			// plus prioritaire
+			a1 = fileArbres.poll();
+
+			if (!fileArbres.isEmpty()) { // Il reste au moins un element
+				a2 = fileArbres.poll();
+				// On cree le nouvel arbre avec les deux arbres restants
+				nvelleracine = new Noeud<Character>(null, a1.racine, a2.racine);
+				a3 = new ArbreHuffman<Character>(nvelleracine,a1.getPriorite() + a2.getPriorite());
+				fileArbres.add(a3);
+			} else { // Il ne reste aucun element
+				break;
+			}
+		}
+		return a1;
+	}
+
 }

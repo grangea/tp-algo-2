@@ -29,14 +29,6 @@ abstract class Arbre<E extends Comparable<E>> {
 		return racine.hauteur();
 	}
 
-	/** Renvoie le nombre de noeuds que contient l'arbre */
-	public int nbNoeuds() {
-		if (estVide())
-			return 0;
-
-		return racine.nbNoeuds();
-	}
-
 	/** Renvoie vrai si la valeur e est sur un noeud de l'arbre */
 	public boolean estPresent(E e) {
 		if (estVide())
@@ -45,14 +37,7 @@ abstract class Arbre<E extends Comparable<E>> {
 		return racine.estPresent(e);
 	}
 
-	/** Renvoie une string contenant l'affichage pr�fix� de l'arbre */
-	public String affichagePrefixeRecursif() {
-		if (estVide())
-			return "";
-
-		return racine.affichagePrefixeRecursif();
-	}
-        
+	/** Renvoie une string contenant l'affichage prefixe de l'arbre */ 
         public String remplissageTableauPrefixeRecursif() {
 		if (estVide())
 			return "";
