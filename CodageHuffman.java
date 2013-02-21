@@ -46,7 +46,9 @@ public class CodageHuffman {
     public void compresserFichier(String nomFichier){ 
         Comparator<ArbreHuffman<Character>> comparator = new KeyComparator<ArbreHuffman<Character>>();
         PriorityQueue<ArbreHuffman<Character>> fileArbres = new PriorityQueue<ArbreHuffman<Character>>(1000,comparator);
-        Hashtable<Integer, ArbreHuffman<Character>> arbreHuffmanLettresFichier = TraitementFichier.lire(nomFichier);
+        
+        TraitementFichier tf = new TraitementFichier();
+        tf.lireDecompresse(nomFichier);
         
         ArbreHuffman<Character> a1 = null;
         ArbreHuffman<Character> a2 = null;
@@ -56,11 +58,11 @@ public class CodageHuffman {
         
         
         try{        	
-            CodageHuffman.affichageHashTable(arbreHuffmanLettresFichier);
-            if (!arbreHuffmanLettresFichier.isEmpty()){
-                    System.out.println("Taille de l'arbre : " +arbreHuffmanLettresFichier.size());
+            CodageHuffman.affichageHashTable(tf.arbreHuffmanLettresFichier);
+            if (!tf.arbreHuffmanLettresFichier.isEmpty()){
+                    System.out.println("Taille de l'arbre : " +tf.arbreHuffmanLettresFichier.size());
             }
-            fileArbres.addAll(arbreHuffmanLettresFichier.values());
+            fileArbres.addAll(tf.arbreHuffmanLettresFichier.values());
             
             if(fileArbres.isEmpty()){
                 throw new Exception();
@@ -89,8 +91,8 @@ public class CodageHuffman {
             System.out.println(e.getMessage());
         }
         	
-        String chaine = a1.remplissageTableauPrefixeRecursif();
-        System.out.println(chaine);
+        String entete = a1.remplissageTableauPrefixeRecursif();
+        tf.ecrireCompresse(entete);
             //--CREER ARBRE DE HUFFMAN 
             //tq priorityqueue a plus d'un element, fusion entre les arbres
 
@@ -105,6 +107,8 @@ public class CodageHuffman {
 
     public void decompresserFichier(){
             //--DECODER L'ENTETE DU FICHIER
+        TraitementFichier tf = new TraitementFichier();
+        tf.lireCompresse("fichierTexteCompresse.txt");
 
             //--GENERER ARBRE HUFFMAN
 
