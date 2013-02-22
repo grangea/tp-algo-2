@@ -40,7 +40,7 @@ abstract class Arbre<E extends Comparable<E>> {
 	}
 
 	/** Renvoie une string contenant l'affichage prefixe de l'arbre */ 
-        public String remplissageTableauPrefixeRecursif(Hashtable<String,String> ht) {
+        public String remplissageTableauPrefixeRecursif(Hashtable<E,String> ht) {
 		if (estVide())
 			return "";
 

@@ -8,12 +8,12 @@ import java.util.Comparator;
 
 public class CodageHuffman {
 
-	public class KeyComparator<E> implements
-	Comparator<ArbreHuffman<Character>> {
+	public class KeyComparator implements
+	Comparator<ArbreHuffman> {
 
 @Override
-public int compare(ArbreHuffman<Character> a1,
-		ArbreHuffman<Character> a2) {
+public int compare(ArbreHuffman a1,
+		ArbreHuffman a2) {
 	if (a1.getPriorite() > a2.getPriorite())
 		return 1;
 	else if (a1.getPriorite() < a2.getPriorite())
@@ -23,9 +23,9 @@ public int compare(ArbreHuffman<Character> a1,
 }
 
 }
-	protected Comparator<ArbreHuffman<Character>> comparator = new KeyComparator<ArbreHuffman<Character>>();
-	//PAS TOP DE METTRE UNE CAPACITE A REVOIR
-	protected PriorityQueue<ArbreHuffman<Character>> fileArbres = new PriorityQueue<ArbreHuffman<Character>>(1000,comparator);
+	protected Comparator comparator = new KeyComparator();
+	//PAS TOP DE METTRE UNE CAPACITE A REVOIR (jsuis daccord)
+	protected PriorityQueue<ArbreHuffman> fileArbres = new PriorityQueue<ArbreHuffman>(1000,comparator);
 	protected TraitementFichier tf = new TraitementFichier();
 	protected String nomFichier ;
 	
@@ -35,7 +35,7 @@ public int compare(ArbreHuffman<Character> a1,
 	}
 	
 	public void compresserFichier() {
-		ArbreHuffman<Character> arbre = null;
+		ArbreHuffman arbre = null;
 		tf.lireFichierACompresser(nomFichier);
 
 		try {
@@ -51,7 +51,7 @@ public int compare(ArbreHuffman<Character> a1,
 			}
 			
 			arbre = creationArbreHuffman();
-			if(arbre!=null){
+			if(arbre != null){
 				String entete = arbre.remplissageTableauPrefixeRecursif(tf.codageLettres);
 				tf.ecrireFichierACompresser(entete);
 			}
@@ -91,12 +91,12 @@ public int compare(ArbreHuffman<Character> a1,
 		}
 	}
 
-	private ArbreHuffman<Character> creationArbreHuffman(){
+	private ArbreHuffman creationArbreHuffman(){
 
-		ArbreHuffman<Character> a1 = null;
-		ArbreHuffman<Character> a2 = null;
-		ArbreHuffman<Character> a3 = null;
-		Noeud<Character> nvelleracine = null;
+		ArbreHuffman a1 = null;
+		ArbreHuffman a2 = null;
+		ArbreHuffman a3 = null;
+		Noeud nvelleracine = null;
 		
 		// tant que la priorityqueue a plus qu'un element, fusion entre
 		// les arbres
