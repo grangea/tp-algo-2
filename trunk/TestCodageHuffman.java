@@ -5,7 +5,8 @@ import codagehuffman.CodageHuffman;
 public class TestCodageHuffman {
 
 	public static void main(String[] args) {
-		String nomFichierCompresse = "C:/Users/Lutine/Documents/fichierTexte.txt";
+		//String nomFichierCompresse = "C:/Users/Lutine/Documents/fichierTexte.txt";
+                String nomFichierCompresse = "C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt";
 		CodageHuffman c1 = new CodageHuffman(nomFichierCompresse);
 		c1.compresserFichier();
 

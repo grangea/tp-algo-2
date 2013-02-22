@@ -10,14 +10,14 @@ public class Noeud<E extends Comparable<E>> {
 	private Noeud<E> filsGauche;
 	private Noeud<E> filsDroit;
 
-	/** Cree un noeud avec une valeur donnée */
+	/** Cree un noeud avec une valeur donnï¿½e */
 	public Noeud(E val) {
 		this.val = val;
 		this.filsDroit = null;
 		this.filsGauche = null;
 	}
 
-	/** Cree un noeud avec une valeur donnée et deux fils */
+	/** Cree un noeud avec une valeur donnï¿½e et deux fils */
 	public Noeud(E val, Noeud<E> filsGauche, Noeud<E> filsDroit) {
 		this.val = val;
 		this.filsGauche = filsGauche;
@@ -35,7 +35,7 @@ public class Noeud<E extends Comparable<E>> {
 		return this.val;
 	}
 
-	/** Renvoie vrai si la valeur est présente sur le noeud */
+	/** Renvoie vrai si la valeur est prï¿½sente sur le noeud */
 	protected boolean estPresent(E v) {
 		int cmp = val.compareTo(v);
 
@@ -48,7 +48,7 @@ public class Noeud<E extends Comparable<E>> {
 		}
 	}
 
-	/** Insère un nouveau noeud contenant une valeur donnée */
+	/** Insï¿½re un nouveau noeud contenant une valeur donnï¿½e */
 	protected void inserer(E v) {
 		int cmp = val.compareTo(v);
 
@@ -81,7 +81,7 @@ public class Noeud<E extends Comparable<E>> {
 		return (1 + Math.max(hauteurSousArbreGauche, hauteurSousArbreDroit));
 	}
 	
-	/** Renvoie le nombre de noeuds à partir de ce noeud */
+	/** Renvoie le nombre de noeuds ï¿½ partir de ce noeud */
 	public int nbNoeudsHuffman() {
 		int nombreNoeudsSousArbreGauche = 0;
 		int nombreNoeudsSousArbreDroit = 0;
@@ -100,8 +100,8 @@ public class Noeud<E extends Comparable<E>> {
 		}
 	}
 
-	/** Renvoie une chaine de caractère contenant les valeurs contenues sur le noeud et ses fils */
-	public String remplissageTableauPrefixeRecursif(Hashtable<String, String> ht, String chaine, int hauteur) {
+	/** Renvoie une chaine de caractï¿½re contenant les valeurs contenues sur le noeud et ses fils */
+	public String remplissageTableauPrefixeRecursif(Hashtable<E, String> ht, String chaine, int hauteur) {
 		String s = "";
 		String s2 = "";
 		int h = hauteur + 1;
@@ -110,7 +110,7 @@ public class Noeud<E extends Comparable<E>> {
 				&& this.val != null) { // feuille
 			s2 = chaine;
 			s2 += "|" + val + "|" + h + "|";
-			ht.put(this.val.toString(),chaine);
+			ht.put(this.val,chaine);
 		}
 		if (this.filsGauche != null) {
 			s = chaine;

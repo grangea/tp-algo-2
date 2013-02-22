@@ -16,8 +16,8 @@ public class TraitementFichier {
 
 	// Hashtable permettant de stocker le couple (codeASCII d'un caractere,
 	// nombre d'occurences de ce caractere)
-	protected Hashtable<Integer, ArbreHuffman<Character>> arbreHuffmanLettresFichier = new Hashtable<Integer, ArbreHuffman<Character>>();;
-	protected Hashtable<String, String> codageLettres = new Hashtable<String,String>();;
+	protected Hashtable<Integer, ArbreHuffman<Integer>> arbreHuffmanLettresFichier = new Hashtable<Integer, ArbreHuffman<Integer>>();;
+	protected Hashtable<Integer, String> codageLettres = new Hashtable<Integer,String>();
 	
 	/**
 	 * Lit les caracteres du fichier a compresser 
@@ -26,31 +26,31 @@ public class TraitementFichier {
 	 */
 	public void lireFichierACompresser(String nomFichier) {
 		try {
-			// Permet de lire le fichier à compresser
+			// Permet de lire le fichier ï¿½ compresser
 			BufferedReader fichierTexte = new BufferedReader(new FileReader(
 					new File(nomFichier)));
-			// Code ASCII correspondant au caractère lu
+			// Code ASCII correspondant au caractï¿½re lu
 			int caractereLuCodeAscii;
 
 			if (fichierTexte == null)
 				throw new FileNotFoundException("Le fichier " + nomFichier
 						+ " n'a pas ete trouve:");
 
-			// Lecture des caractères un par un dans le fichier
+			// Lecture des caractï¿½res un par un dans le fichier
 			while ((caractereLuCodeAscii = fichierTexte.read()) != -1) {
 				// this.texte += (char)caractereLuCodeAscii;
 
-				// Si le caractère n'a jamais été vu avant
+				// Si le caractï¿½re n'a jamais ï¿½tï¿½ vu avant
 				// On l'ajoute dans la Hashtable
 				if (!arbreHuffmanLettresFichier
 						.containsKey(caractereLuCodeAscii)) {
 					arbreHuffmanLettresFichier.put(caractereLuCodeAscii,
-							new ArbreHuffman<Character>((char) caractereLuCodeAscii));
+							new ArbreHuffman<Integer>(caractereLuCodeAscii));
 					
-				} else { // Si le caractère a déjà été vu et enregistré
+				} else { // Si le caractï¿½re a dï¿½jï¿½ ï¿½tï¿½ vu et enregistrï¿½
 							// On augmente son nombre d'occurences dans la
-							// hashtable à partir de son codeASCII
-					ArbreHuffman<Character> arbreHuffman = arbreHuffmanLettresFichier
+							// hashtable ï¿½ partir de son codeASCII
+					ArbreHuffman<Integer> arbreHuffman = arbreHuffmanLettresFichier
 							.get(caractereLuCodeAscii);
 					arbreHuffman.incrementerPriorite();
 				}
@@ -67,17 +67,17 @@ public class TraitementFichier {
 	
 	/**
 	 * Ecrit l'entete contenant chaque symbole avec son code 
-	 * Puis le texte à l'aide des codes des caractères que l'on a déterminé 
+	 * Puis le texte ï¿½ l'aide des codes des caractï¿½res que l'on a dï¿½terminï¿½ 
 	 * avec notre arbre de huffman
 	 */
 	public void ecrireFichierACompresser(String entete) { // A revoir
 		File f = new File(
-				//"C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteCompresse.txt");
-				"C:/Users/Lutine/Documents/TexteCompresse1.txt");
+				"C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteCompresse.txt");
+				//"C:/Users/Lutine/Documents/TexteCompresse1.txt");
 				DataOutputStream dos = null;
 		
 		String chaineAecrire = "";
-		// Code ASCII correspondant à un caractère
+		// Code ASCII correspondant ï¿½ un caractï¿½re
 		int caractereLuCodeAscii;
 
 		try {
@@ -86,15 +86,13 @@ public class TraitementFichier {
 			System.out.println(e.getMessage());
 		}
 
-		//verif hashtable avec codes + symboles
-		if(!this.codageLettres.isEmpty()){
-			Set<String> keySet = codageLettres.keySet();
-			Iterator it = keySet.iterator();
-			while (it.hasNext()) {
-				Object key = it.next();
-				System.out.println("cle : " + (String) key +" valeur : " + codageLettres.get(key).toString());
-			}
-		}
+                //Temporaire
+                Set keySet = codageLettres.keySet();
+                Object[] keys = keySet.toArray();
+                for(int i=0; i < codageLettres.size(); i++){
+                    Object key = keys[i];
+                    System.out.println("cle : "+ key +" valeur : " + codageLettres.get(key));
+                }
 		/*
 		String[] enteteElements = entete.split("\\|");
 		Hashtable<String, String> ht = new Hashtable();
@@ -108,12 +106,12 @@ public class TraitementFichier {
 			BufferedReader fichierTexte = new BufferedReader(
 					new FileReader(
 							new File(
-							"C:/Users/Lutine/Documents/TexteCompresse2.txt")));
+							//"C:/Users/Lutine/Documents/TexteCompresse2.txt")));
 
-									//"C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt"))); /
+									"C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt")));
 
 			while ((caractereLuCodeAscii = fichierTexte.read()) != -1) {
-				chaineAecrire += codageLettres.get((char) caractereLuCodeAscii);
+				chaineAecrire += codageLettres.get(caractereLuCodeAscii);
 			}
 		} catch (IOException e) {
 
