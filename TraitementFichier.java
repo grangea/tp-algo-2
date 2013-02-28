@@ -1,8 +1,10 @@
 package codagehuffman;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -30,43 +32,35 @@ public class TraitementFichier {
      * Lit les caracteres du fichier a compresser Ajoute chaque caractere dans
      * la Hashtable si non present Sinon modifie leur priorite
      */
-    public void lireFichierACompresser(String nomFichier) {
-        try {
-            // Permet de lire le fichier a compresser
-            BufferedReader fichierTexte = new BufferedReader(new FileReader(
-                    new File(nomFichier)));
-            // Code ASCII correspondant au caractere lu
-            int caractereLuCodeAscii;
+    public void lireFichierACompresser(String nomFichierOriginal) throws FileNotFoundException, IOException {
+        // Permet de lire le fichier a compresser
+        BufferedReader fichierTexte = new BufferedReader(new FileReader(
+                new File(nomFichierOriginal)));
+        // Code ASCII correspondant au caractere lu
+        int caractereLuCodeAscii;
 
-            if (fichierTexte == null)
-                throw new FileNotFoundException("Le fichier " + nomFichier
-                        + " n'a pas ete trouve:");
+        if (fichierTexte == null)
+            throw new FileNotFoundException("Le fichier " + nomFichierOriginal
+                    + " n'a pas ete trouve:");
 
-            // Lecture des caracteres un par un dans le fichier
-            while ((caractereLuCodeAscii = fichierTexte.read()) != -1) {
-                // this.texte += (char)caractereLuCodeAscii;
+        // Lecture des caracteres un par un dans le fichier
+        while ((caractereLuCodeAscii = fichierTexte.read()) != -1) {
+            // this.texte += (char)caractereLuCodeAscii;
 
-                // Si le caractere n'a jamais ete vu avant
-                // On l'ajoute dans la Hashtable
-                if (!arbreHuffmanLettresFichier
-                        .containsKey(caractereLuCodeAscii)) {
-                    arbreHuffmanLettresFichier.put(caractereLuCodeAscii,
-                            new ArbreHuffman<Integer>(caractereLuCodeAscii));
+            // Si le caractere n'a jamais ete vu avant
+            // On l'ajoute dans la Hashtable
+            if (!arbreHuffmanLettresFichier
+                    .containsKey(caractereLuCodeAscii)) {
+                arbreHuffmanLettresFichier.put(caractereLuCodeAscii,
+                        new ArbreHuffman<Integer>(caractereLuCodeAscii));
 
-                } else { // Si le caractere a deja ete vu et enregistre
-                            // On augmente son nombre d'occurences dans la
-                            // hashtable a partir de son codeASCII
-                    ArbreHuffman<Integer> arbreHuffman = arbreHuffmanLettresFichier
-                            .get(caractereLuCodeAscii);
-                    arbreHuffman.incrementerPriorite();
-                }
+            } else { // Si le caractere a deja ete vu et enregistre
+                        // On augmente son nombre d'occurences dans la
+                        // hashtable a partir de son codeASCII
+                ArbreHuffman<Integer> arbreHuffman = arbreHuffmanLettresFichier
+                        .get(caractereLuCodeAscii);
+                arbreHuffman.incrementerPriorite();
             }
-
-        } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
         }
 
     }
@@ -76,20 +70,50 @@ public class TraitementFichier {
      * l'aide des codes des caractï¿½res que l'on a determine avec notre arbre
      * de huffman
      */
-    public void ecrireFichierACompresser(String nomFichier,
-            String nomFichierModifie, String entete) { // A revoir
-        String chaineAecrire = "";
-        // Code ASCII correspondant a un caractere
+    public void ecrireFichierACompresser(String nomFichierOriginal,
+        String nomFichierCompresse, String entete) throws FileNotFoundException, IOException { // A revoir
         int caractereLuCodeAscii;
-        File f = new File(nomFichierModifie);
-        // "C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteCompresse.txt");
-        DataOutputStream dos = null;
+        char caractereLuBit;
+        String codeCaractere;
 
-        try {
-            dos = new DataOutputStream(new FileOutputStream(f));
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        BufferedReader fichierTexte = new BufferedReader(new FileReader(new File(nomFichierOriginal)));
+        FileOutputStream fichierTexteCompresse = new FileOutputStream(nomFichierCompresse);
+        
+        int offset = 0;
+        int bits = 0;
+        
+        // Ecritute de l'entete
+        for(int i=0; i<entete.length()-1; i++){
+            fichierTexteCompresse.write(entete.charAt(i));
         }
+        fichierTexteCompresse.write(';');
+        
+        // Ecriture du corps
+        while ((caractereLuCodeAscii = fichierTexte.read()) != -1) {
+            // Récupération du code correspond au caractère lu
+            codeCaractere = codageLettres.get(caractereLuCodeAscii);
+
+            // Lecture du code bit par bit
+            for(int i=0; i<codeCaractere.length(); i++){
+                caractereLuBit = codeCaractere.charAt(i);
+                
+                if (caractereLuBit == '0'){
+                    bits <<= 1;
+                }else{
+                    bits = bits << 1|1;
+                }
+                offset++;
+                if (offset == 8){
+                  fichierTexteCompresse.write(bits);
+                  bits = 0;
+                  offset = 0;
+                }
+            }
+        }
+        
+        fichierTexte.close();
+        fichierTexteCompresse.close();
+
 
         // Affichage Temporaire
         /*
@@ -99,7 +123,7 @@ public class TraitementFichier {
          * codageLettres.get(key)); }
          */
 
-        try {
+        /*try {
             BufferedReader fichierTexte = new BufferedReader(new FileReader(
                     new File(nomFichier)));
 
@@ -137,19 +161,103 @@ public class TraitementFichier {
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
-        }
+        }*/
     }
 
-    public void lireFichierADecompresser(String nomFichier,
-            String nomFichierModifie) {
+    public void lireFichierADecompresser(String nomFichierCompresse,
+            String nomFichierDecompresse) throws FileNotFoundException, IOException {
+        String entete = "";
+        
+        FileInputStream fichierCompresse = new FileInputStream(nomFichierCompresse);
+        FileOutputStream fichierDecompresse = new FileOutputStream(nomFichierDecompresse);
+        
+        // Lecture de l'entete et génération de la hashtable
+        boolean estEntete = true;
+        boolean entreeEntiere = false;
+        String codeAsciiCaractere = "";
+        String codeCaractere = "";
+        int caractereLuCodeAscii;
+        char caractereLuChar;
+        while(estEntete){
+            caractereLuCodeAscii = fichierCompresse.read();
+            caractereLuChar = (char)caractereLuCodeAscii; // A voir si c crade ou pas
+            if(caractereLuChar == ';'){
+                estEntete = false;
+                decodageLettres.put(codeCaractere,Integer.parseInt(codeAsciiCaractere));
+                codeCaractere = "";
+            }else if((char)caractereLuCodeAscii == '|'){
+                if(entreeEntiere){
+                    decodageLettres.put(codeCaractere,Integer.parseInt(codeAsciiCaractere));
+                    codeAsciiCaractere = "";
+                    codeCaractere = "";
+                    entreeEntiere = false;
+                }else{
+                    entreeEntiere = true;
+                }
+            }else{
+                if(entreeEntiere){ // On a fini de trouver la valeur de l'entrée
+                    codeAsciiCaractere += caractereLuChar;         
+                }else{ // On a fini de trouver la clé de l'entrée
+                    codeCaractere += caractereLuChar;
+                }
+            }            
+        }
+              
+        int bits = 0;  
+        int mask = 0;
+        int maskTmp = 0;
+        int bitsTmp = 0;       
+        while(true){
+            maskTmp = mask;
+            
+            if (maskTmp == 0) {
+                bitsTmp = fichierCompresse.read();
+                if(bitsTmp == -1)
+                    break;
 
-        try {
+                bits = bitsTmp;
+                maskTmp = 0x80;
+            } else {
+                bitsTmp = bits;
+            }
+
+            // On cherche à savoir si l'on a le bit 0 ou 1
+            if((bitsTmp & maskTmp) == 0) {
+                mask = maskTmp>>1;
+                codeCaractere += '0';
+            } else {
+                mask = maskTmp>>1;
+                codeCaractere += '1';
+            }
+
+            // On cherche à savoir si le code correspond à un code de la hashtable
+            if(decodageLettres.containsKey(codeCaractere)){
+                fichierDecompresse.write(decodageLettres.get(codeCaractere));
+                codeCaractere = "";
+            }
+        }
+
+        fichierCompresse.close();
+        fichierDecompresse.close();
+        
+        
+        
+        
+        
+        
+
+        /*try {
 
             // --DECODER L'ENTETE DU FICHIER => mettre dans le hashtable
             // les codes binaires + symbole en code ascii
             // --DECODER LES BITS + REGENERER LE TEXTE => ecrire dans un
             // autre fichier les caracteres qui
             // correspondent aux codes lus
+            
+        
+            
+            
+            
             Scanner scannerFichier = new Scanner(new File(nomFichier));
             
             scannerFichier.useDelimiter(Pattern.compile("[|]"));
@@ -215,7 +323,7 @@ public class TraitementFichier {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
 
     }
 }

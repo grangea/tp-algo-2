@@ -1,5 +1,7 @@
 package codagehuffman;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -66,7 +68,7 @@ public int compare(ArbreHuffman a1,
 
 	}
 
-	public void decompresserFichier() {
+	public void decompresserFichier() throws FileNotFoundException, IOException {
 		
 		tf.lireFichierADecompresser(nomFichier,nomFichierModifie);
 		
