@@ -14,10 +14,10 @@ public class TestCodageHuffman {
                 String nomFichierDecompresse = "C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteDecompresse.txt";
                 
 		CodageHuffman c1 = new CodageHuffman(nomFichierOriginal,nomFichierCompresse);
-		c1.compresserFichier();
+		//c1.compresserFichier();
                 
                 CodageHuffman c2 = new CodageHuffman(nomFichierCompresse,nomFichierDecompresse);
-		c2.decompresserFichier();
+                c2.decompresserFichier();
 
 	}
 }
