@@ -10,7 +10,7 @@ import java.util.Comparator;
 
 public class CodageHuffman {
 
-	public class KeyComparator implements
+	public class PrioriteArbreHuffmanComparator implements
 	Comparator<ArbreHuffman> {
 
 @Override
@@ -25,7 +25,7 @@ public int compare(ArbreHuffman a1,
 }
 
 }
-	protected Comparator comparator = new KeyComparator();
+	protected Comparator comparator = new PrioriteArbreHuffmanComparator();
 	//PAS TOP DE METTRE UNE CAPACITE A REVOIR (jsuis daccord)
 	protected PriorityQueue<ArbreHuffman> fileArbres = new PriorityQueue<ArbreHuffman>(1000,comparator);
 	protected TraitementFichier tf = new TraitementFichier();
@@ -38,7 +38,7 @@ public int compare(ArbreHuffman a1,
 		this.nomFichierModifie=nomFichierModifie;		
 	}
 	
-	public void compresserFichier() {
+	public void compresserFichier() throws FileNotFoundException, IOException {
 		ArbreHuffman<Integer> arbre = null;
 		tf.lireFichierACompresser(nomFichier);
 

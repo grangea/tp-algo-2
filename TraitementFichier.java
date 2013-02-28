@@ -10,14 +10,32 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 public class TraitementFichier {
+    
+    public class LongueurStringeyComparator implements
+	Comparator<String> {
 
+@Override
+public int compare(String s1,
+		String s2) {
+	if (s1.length() > s2.length())
+		return 1;
+	else
+		return -1;
+}
+
+}
+
+    protected Comparator comparator = new LongueurStringeyComparator();
     // Hashtable permettant de stocker le couple (codeASCII d'un caractere,
     // nombre d'occurences de ce caractere)
     protected Hashtable<Integer, ArbreHuffman<Integer>> arbreHuffmanLettresFichier = new Hashtable<Integer, ArbreHuffman<Integer>>();;
@@ -26,7 +44,7 @@ public class TraitementFichier {
     protected Hashtable<Integer, String> codageLettres = new Hashtable<Integer, String>();
     // Hastable permettant de stocker le couple(Cle:code binaire, code ascii du
     // caractere)
-    protected Hashtable<String, Integer> decodageLettres = new Hashtable<String, Integer>();
+    protected TreeMap<String, Integer> decodageLettres = new TreeMap<String, Integer>(comparator);
 
     /**
      * Lit les caracteres du fichier a compresser Ajoute chaque caractere dans
@@ -104,7 +122,7 @@ public class TraitementFichier {
                 }
                 offset++;
                 if (offset == 8){
-                  fichierTexteCompresse.write(bits);
+                  //fichierTexteCompresse.write(bits);
                   bits = 0;
                   offset = 0;
                 }
