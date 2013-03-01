@@ -5,7 +5,11 @@ import java.util.Hashtable;
 import codagehuffman.Noeud;
 
 public class Noeud<E extends Comparable<E>> {
-
+	/**
+	 * @brief  Gere les noeuds contenus dans un arbre 
+	 * @date   Fevrier 2013
+	 * @author Alice GRANGE & Romain LHORTOLAT
+	 */
 	private E val;
 	private Noeud<E> filsGauche;
 	private Noeud<E> filsDroit;

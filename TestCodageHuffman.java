@@ -5,11 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class TestCodageHuffman {
+	/**
+	 * @brief  Teste differents fichiers a compresser et a decompresser
+	 * @date   Fevrier 2013
+	 * @author Alice GRANGE & Romain LHORTOLAT
+	 */
 	
-	//Variables pour gerer les fichiers
-	static String nomFichierOriginal = "C:/Users/Lutine/Documents/ExemplesTexteAlgo/fichierTexte1.txt";
-	static String nomFichierCompresse = "C:/Users/Lutine/Documents/ExemplesTexteAlgo/fichierTexteCompresse1.txt";
-	static String nomFichierDecompresse = "C:/Users/Lutine/Documents/ExemplesTexteAlgo/fichierTexteDecompresse1.txt";
+	private static String nomFichierOriginal = "C:/Users/Lutine/Documents/ExemplesTexteAlgo/fichierTexte1.txt";
+	private static String nomFichierCompresse = "C:/Users/Lutine/Documents/ExemplesTexteAlgo/fichierTexteCompresse1.txt";
+	private static String nomFichierDecompresse = "C:/Users/Lutine/Documents/ExemplesTexteAlgo/fichierTexteDecompresse1.txt";
 	
 	 /*
 	 * static String nomFichierCompresse =
@@ -21,11 +25,10 @@ public class TestCodageHuffman {
 	 */
 	
 	// Variables pour les temps d'exécution
-	static long start;
-	static long duree;
+	private static long start;
+	private static long duree;
 	
-	public static void main(String[] args) throws FileNotFoundException,
-			IOException {
+	public static void main(String[] args){
 
 		System.out.println("_____________________FICHIER TEXTE 1_____________________");
 		start = System.nanoTime();
@@ -40,19 +43,17 @@ public class TestCodageHuffman {
 
 	}
 	
-	private static void testCompression() throws FileNotFoundException, IOException{
+	private static void testCompression() {
 		System.out.println("********************COMPRESSION FICHIER*******************");
 		CodageHuffman c1 = new CodageHuffman(nomFichierOriginal,
 				nomFichierCompresse);
-		// Compression du fichier original
 		c1.compresserFichier();	
 	}
 	
-	private static void testDecompression() throws FileNotFoundException, IOException{
+	private static void testDecompression() {
 		System.out.println("*******************DECOMPRESSION FICHIER******************");
 		CodageHuffman c2 = new CodageHuffman(nomFichierCompresse,
 				nomFichierDecompresse);
-		// Decompression du fichier que l'on a compressé
 		c2.decompresserFichier();
 	}
 }

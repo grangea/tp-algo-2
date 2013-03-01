@@ -1,10 +1,14 @@
 package codagehuffman;
 
 import java.util.Hashtable;
-
 import codagehuffman.Noeud;
 
 abstract class Arbre<E extends Comparable<E>> {
+	/**
+	 * @brief Gere un arbre compose d'un noeud appele racine
+	 * @date Fevrier 2013
+	 * @author Alice GRANGE & Romain LHORTOLAT
+	 */
 
 	protected Noeud<E> racine;
 

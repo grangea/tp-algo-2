@@ -4,9 +4,12 @@ import codagehuffman.ArbreBinaire;
 import codagehuffman.Noeud;
 
 public class ArbreHuffman<E extends Comparable<E>> extends ArbreBinaire<E> {
-
-	// Un arbre de huffman est un type d'arbre binaire mais a en plus une
-	// priorite
+	/**
+	 * @brief  Gere un arbre de huffman c'est a dire un arbre binaire particulier
+	 * compose d'une priorite
+	 * @date   Fevrier 2013
+	 * @author Alice GRANGE & Romain LHORTOLAT
+	 */
 
 	private int priorite;
 
