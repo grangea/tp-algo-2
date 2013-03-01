@@ -30,13 +30,13 @@ public class CodageHuffman {
 
 	}
 
-	protected Comparator comparator = new PrioriteArbreHuffmanComparator();
+	private Comparator comparator = new PrioriteArbreHuffmanComparator();
 	// PAS TOP DE METTRE UNE CAPACITE A REVOIR (jsuis daccord)
-	protected PriorityQueue<ArbreHuffman> fileArbres = new PriorityQueue<ArbreHuffman>(
+	private PriorityQueue<ArbreHuffman> fileArbres = new PriorityQueue<ArbreHuffman>(
 			1000, comparator);
-	protected TraitementFichier tf = new TraitementFichier();
-	protected String nomFichier = "";
-	protected String nomFichierModifie = "";
+	private TraitementFichier tf = new TraitementFichier();
+	private String nomFichier = "";
+	private String nomFichierModifie = "";
 
 	/*----------------------METHODES PRINCIPALES-----------------------*/
 	public CodageHuffman(String nomFichier, String nomFichierModifie) {
@@ -44,9 +44,9 @@ public class CodageHuffman {
 		this.nomFichierModifie = nomFichierModifie;
 	}
 
-	public void compresserFichier() {
+	public void compresserFichier() throws FileNotFoundException, IOException {
 		ArbreHuffman<Integer> arbre = null;
-		try {
+
 			tf.lireFichierACompresser(nomFichier);
 			fileArbres.addAll(tf.arbreHuffmanLettresFichier.values());
 
@@ -60,22 +60,10 @@ public class CodageHuffman {
 							entete);
 				}
 			}
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		}
-
 	}
 
-	public void decompresserFichier() {
-		try {
+	public void decompresserFichier() throws FileNotFoundException, IOException {
 			tf.lireEcrireFichierADecompresser(nomFichier, nomFichierModifie);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/*----------------------METHODES SUBORDONNEES-----------------------*/
