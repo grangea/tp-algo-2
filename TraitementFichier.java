@@ -10,36 +10,39 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class TraitementFichier {
 	/**
-	 * @brief  Traite un fichier qui doit compresser ou decompresser
-	 * @date   Fevrier 2013
+	 * @brief Traite un fichier qui doit compresser ou decompresser
+	 * @date Fevrier 2013
 	 * @author Alice GRANGE & Romain LHORTOLAT
 	 */
-	private class LongueurStringeyComparator implements Comparator<String> {
-
-		@Override
-		public int compare(String s1, String s2) {
-			if (s1.length() > s2.length())
-				return 1;
-			else
-				return -1;
-		}
-
-	}
-
-	private Comparator comparator = new LongueurStringeyComparator();
-	// Hashtable permettant de stocker le couple (codeASCII d'un caractere,
-	// nombre d'occurences de ce caractere)
+	/*
+	 * private class LongueurStringeyComparator implements Comparator<String> {
+	 * 
+	 * @Override public int compare(String s1, String s2) { if (s1.length() >
+	 * s2.length()) return 1; else return -1; }
+	 * 
+	 * } private Comparator comparator = new LongueurStringeyComparator();
+	 */
 	protected Hashtable<Integer, ArbreHuffman<Integer>> arbreHuffmanLettresFichier = new Hashtable<Integer, ArbreHuffman<Integer>>();;
-	// Hastable permettant de stocker le couple(Cle:code ascii du caractere,
-	// code binaire)
+	/**
+	 * Hashtable permettant de stocker le couple (codeASCII d'un caractere,
+	 * nombre d'occurences de ce caractere)
+	 */
+
 	protected Hashtable<Integer, String> codageLettres = new Hashtable<Integer, String>();
-	// Treemap permettant de stocker le couple(Cle:code binaire, code ascii du
-	// caractere)
-	private TreeMap<String, Integer> decodageLettres = new TreeMap<String, Integer>(
-			comparator);
+	/**
+	 * Hastable permettant de stocker le couple(Cle:code ascii du caractere,
+	 * code binaire)
+	 */
+
+	private TreeMap<String, Integer> decodageLettres = new TreeMap<String, Integer>();
+	/**
+	 * Treemap permettant de stocker le couple(Cle:code binaire, code ascii du
+	 * caractere)
+	 */
 
 	/**
 	 * Lit les caracteres du fichier a compresser Ajoute chaque caractere dans
@@ -52,11 +55,12 @@ public class TraitementFichier {
 				new File(nomFichierOriginal)));
 		// Code ASCII correspondant au caractere lu
 		int caractereLuCodeAscii;
+		int nbCaracteresLus=0;
 
 		// Lecture des caracteres un par un dans le fichier
 		while ((caractereLuCodeAscii = fichierTexte.read()) != -1) {
 			// this.texte += (char)caractereLuCodeAscii;
-
+			nbCaracteresLus++;
 			// Si le caractere n'a jamais ete vu avant
 			// On l'ajoute dans la Hashtable
 			if (!arbreHuffmanLettresFichier.containsKey(caractereLuCodeAscii)) {
@@ -71,7 +75,7 @@ public class TraitementFichier {
 				arbreHuffman.incrementerPriorite();
 			}
 		}
-
+		System.out.println("Nombre de caracteres lus:" + nbCaracteresLus);
 	}
 
 	/**
@@ -126,9 +130,9 @@ public class TraitementFichier {
 		fichierTexte.close();
 		fichierTexteCompresse.close();
 
-		System.out.println("Taille du dictionnaire codageLettres: "
-				+ codageLettres.size());
-
+		System.out
+				.println("Nombre de caracteres differents : "
+						+ codageLettres.size());
 	}
 
 	/**
@@ -145,7 +149,7 @@ public class TraitementFichier {
 		FileOutputStream fichierDecompresse = new FileOutputStream(
 				nomFichierDecompresse);
 
-		//----- Lecture de l'entete et generation de la hashtable------
+		// ----- Lecture de l'entete et generation de la hashtable------
 		boolean estEntete = true;
 		boolean entreeEntiere = false;
 		String codeAsciiCaractere = "";
@@ -181,9 +185,9 @@ public class TraitementFichier {
 				}
 			}
 		}
-		//----- Fin de la lecture de l'entete ------------------------------
+		// ----- Fin de la lecture de l'entete ------------------------------
 
-		//----- Lecture du texte code et decompression ---------------------
+		// ----- Lecture du texte code et decompression ---------------------
 		int bits = 0;
 		int mask = 0;
 		int maskTmp = 0;
@@ -216,16 +220,12 @@ public class TraitementFichier {
 			if (decodageLettres.containsKey(codeCaractere)) {
 				fichierDecompresse.write(decodageLettres.get(codeCaractere));
 				codeCaractere = "";
-				System.out.println("boucle code trouve");
 			}
 		}
-		//----- Fin de la lecture du texte code ----------------------------
-		
+		// ----- Fin de la lecture du texte code ----------------------------
+
 		fichierCompresse.close();
 		fichierDecompresse.close();
-
-		System.out.println("Taille du dictionnaire decodageLettres: "
-				+ decodageLettres.size());
 
 	}
 
