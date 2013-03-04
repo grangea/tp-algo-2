@@ -13,12 +13,12 @@ public class TestCodageHuffman {
 
 	private static int NB_FICHIERS = 3;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException, IOException {
 		double start;
 		double duree;
-		CodageHuffman[] ch = new CodageHuffman[NB_FICHIERS];
+		//CodageHuffman[] ch = new CodageHuffman[NB_FICHIERS];
 
-		try {
+		/*try {
 			for (int i = 0; i < NB_FICHIERS; i++) {
 				ch[i] = new CodageHuffman("Texte" + i + ".txt", "Texte" + i
 						+ "Compresse.txt");
@@ -29,7 +29,7 @@ public class TestCodageHuffman {
 				duree = System.nanoTime() - start;
 				System.out
 						.println("**********************COMPRESSION*********************");
-				System.out.println("Duree d'éxécution : " + (duree*0.000000001) + " s");
+				System.out.println("Duree d'ï¿½xï¿½cution : " + (duree*0.000000001) + " s");
 				System.out
 						.println("*********************DECOMPRESSION*********************");
 				ch[i] = new CodageHuffman("Texte" + i + "Compresse.txt",
@@ -37,7 +37,7 @@ public class TestCodageHuffman {
 				start = System.nanoTime();
 				ch[i].decompresserFichier();
 				duree = System.nanoTime() - start;
-				System.out.println("Duree d'éxécution : " + (duree*0.000000001) + " s");
+				System.out.println("Duree d'ï¿½xï¿½cution : " + (duree*0.000000001) + " s");
 				System.out
 						.println("_________________________________________________________");
 				System.out.println("");
@@ -47,6 +47,10 @@ public class TestCodageHuffman {
 			System.out.println("Le fichier est introuvable!");
 		} catch (IOException e) {
 			System.out.println("------------" + e + "------------");
-		}
-	}
+		}*/
+	CodageHuffman ch = new CodageHuffman("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt", "C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteCompresse.txt");
+        ch.compresserFichier(); 
+        CodageHuffman ch2 = new CodageHuffman("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteCompresse.txt", "C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteDecompresse.txt");
+        ch2.decompresserFichier(); 
+        }  
 }

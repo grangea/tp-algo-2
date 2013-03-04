@@ -42,5 +42,5 @@ public class ArbreBinaire<E extends Comparable<E>> extends Arbre<E> {
 		Noeud<E> racine = new Noeud<E>(val, noeudFilsGauche, noeudFilsDroit);
 		this.racine = racine;
 	}
-
+        
 }
