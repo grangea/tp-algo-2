@@ -57,5 +57,19 @@ public class ArbreHuffman<E extends Comparable<E>> extends ArbreBinaire<E> {
 
 		return racine.nbNoeudsHuffman();
 	}
+        
+        public Noeud insererHuffman(int caractereAscii, int longueur){
+            if (estVide())
+                racine = new Noeud();
+            
+            return racine.insererHuffman(caractereAscii, longueur);
+        }
+        
+        public E existeFeuille(String successionCode){
+            if(!estVide())
+                return racine.estFeuilleHuffman(successionCode, 0);
+            else
+                return null;
+        }
 
 }

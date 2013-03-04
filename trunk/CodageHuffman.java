@@ -47,19 +47,21 @@ public class CodageHuffman {
 	public void compresserFichier() throws FileNotFoundException, IOException {
 		ArbreHuffman<Integer> arbre = null;
 
-			tf.lireFichierACompresser(nomFichier);
-			fileArbres.addAll(tf.arbreHuffmanLettresFichier.values());
+                int nbCaracteresLus = tf.lireFichierACompresser(nomFichier);
+                System.out.println("Nombre de caracteres lus:" + nbCaracteresLus);
+                
+                fileArbres.addAll(tf.arbreHuffmanLettresFichier.values());
 
-			if (!fileArbres.isEmpty()
-					&& !tf.arbreHuffmanLettresFichier.isEmpty()) {
-				arbre = creationArbreHuffman();
-				if (arbre != null) {
-					String entete = arbre
-							.remplissageTableauPrefixeRecursif(tf.codageLettres);
-					tf.ecrireFichierACompresser(nomFichier, nomFichierModifie,
-							entete);
-				}
-			}
+                if (!fileArbres.isEmpty()
+                                && !tf.arbreHuffmanLettresFichier.isEmpty()) {
+                        arbre = creationArbreHuffman();
+                        if (arbre != null) {
+                                String entete = arbre
+                                                .remplissageTableauPrefixeRecursif(tf.codageLettres);
+                                tf.ecrireFichierACompresser(nomFichier, nomFichierModifie,
+                                                entete, nbCaracteresLus);
+                        }
+                }
 	}
 
 	public void decompresserFichier() throws FileNotFoundException, IOException {
