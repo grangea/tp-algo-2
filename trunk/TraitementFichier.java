@@ -41,7 +41,7 @@ public class TraitementFichier<E> {
 	 */
         Object[] tableauArbresHuffman;
 
-	String[] codageLettres;
+	LinkedHashMap<Integer,String> codageLettres;
 	/**
 	 * Hastable permettant de stocker le couple(Cle:code ascii du caractere,
 	 * code binaire)
@@ -116,14 +116,16 @@ public class TraitementFichier<E> {
                     
                 byte[] enteteEtContenuAEcrire = new byte[(nbCaracteresLusDifferents*2)+texteALireFichierOriginal.length];
                 int k = 0;
-		// Enregistrement de l'entete                               
-		for (int i = 0; i < codageLettres.length; i++) {
-                    if(codageLettres[i] != null){
-                        enteteEtContenuAEcrire[k] = (byte)i;
-                        enteteEtContenuAEcrire[k+1] = Byte.parseByte(codageLettres[i]);
-                        k = k+2;
-                    }
-		}
+		// Enregistrement de l'entete    
+                Set cles = codageLettres.keySet();
+                Iterator it = cles.iterator();
+                while (it.hasNext()){
+                   Integer cle = (Integer)it.next();
+                   String valeur = (String)codageLettres.get(cle);
+                   enteteEtContenuAEcrire[k] = (byte)(int)cle;
+                   enteteEtContenuAEcrire[k+1] = (byte)valeur.length();
+                   k = k+2;
+                }
                                      
                 // Enregistrement du contenu après traduction grace au codage de Huffman
                 int nombreBytesContenuAEcrire = k;
@@ -135,7 +137,7 @@ public class TraitementFichier<E> {
 		for(int i=0; i<texteALireFichierOriginal.length; i++) {
                         caractereLuCodeAscii = texteALireFichierOriginal[i];
 			// Recuperation du code correspond au caractere lu
-			codeCaractereTemp = codageLettres[caractereLuCodeAscii];
+			codeCaractereTemp = codageLettres.get(caractereLuCodeAscii);
 
 			// Lecture du code bit par bit
 			for (int j = 0; j < codeCaractereTemp.length(); j++) {
@@ -197,42 +199,40 @@ public class TraitementFichier<E> {
                 byte[] buffer = new byte[fichierCompresse.available()]; 
                 fichierCompresse.read(buffer);                
                 String nbCaracteresLusString = "";
-                int nbCaracteresLus;
+                int nbCaracteresALire;
                 String nbCaracteresLusDifferentsString = "";
-                int nbCaracteresDifferentsLus;
+                int nbCaracteresDifferentsALire;
                 int i=0;
                 int j=0;
                 
                 for(i=0; buffer[i]!=';'; i++){
                     nbCaracteresLusString += buffer[i]-48;
                 }
-                nbCaracteresLus = Integer.parseInt(nbCaracteresLusString);
+                nbCaracteresALire = Integer.parseInt(nbCaracteresLusString);
                 
                 for(i = i+1; buffer[i]!=';'; i++){
                     nbCaracteresLusDifferentsString += buffer[i]-48;
                 }
-                nbCaracteresDifferentsLus = Integer.parseInt(nbCaracteresLusDifferentsString);
+                nbCaracteresDifferentsALire = Integer.parseInt(nbCaracteresLusDifferentsString);
                 
                 ArbreBinaire<Integer> af = new ArbreBinaire();
-                for(i = i+1; nbCaracteresDifferentsLus > 0; i=i+2){
-                    System.out.println("Code ascii : "+(int)buffer[i]);
-                    System.out.println("Code car : "+Integer.parseInt(Byte.toString(buffer[i+1]),2));
-                    af.insererNoeudHauteurPrecise((int)buffer[i],Integer.parseInt(Byte.toString(buffer[i+1]),2)); 
-                    nbCaracteresDifferentsLus--;
+                for(i = i+1; nbCaracteresDifferentsALire > 0; i=i+2){
+                    af.insererNoeudHauteurPrecise((int)buffer[i],(int)buffer[i+1]); 
+                    nbCaracteresDifferentsALire--;
 		}              
 		// ----- Fin de la lecture de l'entete et de la génération de la hashtable temporaire ------              
                 
                 // ----- Lecture du texte code et decompression ---------------------
                 if(!af.estVide()){ // L'arbre reconstruit n'est pas vide
-                    byte[] texteAEcrireFichierDecompresse = new byte[nbCaracteresLus];
+                    byte[] texteAEcrireFichierDecompresse = new byte[nbCaracteresALire];
                     int nombreCaracteresEcritsFichierDecompresse = 0;
                     int[] masques = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
                     Noeud noeudTmp = af.racine;
                     Integer valNoeud;
 
-                    for(i = i+1; nombreCaracteresEcritsFichierDecompresse < nbCaracteresLus; i++){  
-                        for(j=7; (j >= 0) && (nombreCaracteresEcritsFichierDecompresse < nbCaracteresLus); j--){                    
+                    for(i = i; nombreCaracteresEcritsFichierDecompresse < nbCaracteresALire; i++){  
+                        for(j=7; (j >= 0) && (nombreCaracteresEcritsFichierDecompresse < nbCaracteresALire); j--){                    
                             if((buffer[i] & masques[j]) == 0)
                                 noeudTmp = noeudTmp.getFilsGauche();
                             else

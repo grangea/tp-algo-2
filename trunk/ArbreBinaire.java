@@ -4,6 +4,7 @@ import codagehuffman.Arbre;
 import codagehuffman.ArbreBinaire;
 import codagehuffman.Noeud;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class ArbreBinaire<E extends Comparable<E>> extends Arbre<E> {
 	/**
@@ -46,9 +47,9 @@ public class ArbreBinaire<E extends Comparable<E>> extends Arbre<E> {
         
         
 	/** Renvoie une string contenant l'affichage prefixe de l'arbre */ 
-        public void paroursTableauPrefixe(String[] codageLettres){
+        public void paroursPrefixe(LinkedHashMap<Integer,String> codageLettres){
 		if (!estVide()){                             
-                    racine.chaineParoursTableauPrefixe(codageLettres, "");
+                    racine.parcoursPrefixe(codageLettres, "");
                 }
 	}
         
