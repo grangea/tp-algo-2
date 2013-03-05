@@ -3,6 +3,7 @@ package codagehuffman;
 import java.util.Hashtable;
 
 import codagehuffman.Noeud;
+import java.util.LinkedHashMap;
 
 public class Noeud<E extends Comparable<E>> {
 	/**
@@ -119,7 +120,7 @@ public class Noeud<E extends Comparable<E>> {
 	}
 
 	/** Renvoie une chaine de caract�re contenant les valeurs contenues sur le noeud et ses fils */
-	public String chaineParoursTableauPrefixe(String[] codageLettres, String code) {
+	public String parcoursPrefixe(LinkedHashMap<Integer,String> codageLettres, String code) {
 		String s = "";
 		String s2 = "";
 		//int h = hauteur + 1;
@@ -130,17 +131,17 @@ public class Noeud<E extends Comparable<E>> {
 			//s2 += "|" + val + "|" + h + "|";
 			s2 += val + "|" + (byte)(l+48) + "|";
                         
-			codageLettres[(Integer) val] = code;
+			codageLettres.put((Integer)val,code);
 		}
 		if (this.filsGauche != null) {
 			s = code;
 			s += "0";
-			s2 += filsGauche.chaineParoursTableauPrefixe(codageLettres,s);
+			s2 += filsGauche.parcoursPrefixe(codageLettres,s);
 		}
 		if (this.filsDroit != null) {
 			s = code;
 			s += "1";
-			s2 += filsDroit.chaineParoursTableauPrefixe(codageLettres,s);
+			s2 += filsDroit.parcoursPrefixe(codageLettres,s);
 		}
 
 		return s2;

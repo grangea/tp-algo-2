@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 
 public class CodageHuffman {
 	/**
@@ -59,8 +60,8 @@ public class CodageHuffman {
 
                     int nbCaracteresLusDifferents = fileArbres.size();
                     arbre = creationArbreHuffman();
-                    tf.codageLettres = new String[256];
-                    arbre.paroursTableauPrefixe(tf.codageLettres);
+                    tf.codageLettres = new LinkedHashMap<Integer,String>();
+                    arbre.paroursPrefixe(tf.codageLettres);
                     tf.ecrireFichierACompresser(nomFichier, nomFichierModifie, nbCaracteresLus, nbCaracteresLusDifferents);
                 }
 
