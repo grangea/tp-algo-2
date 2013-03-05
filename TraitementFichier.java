@@ -119,9 +119,11 @@ public class TraitementFichier<E> {
 		// Enregistrement de l'entete    
                 Set cles = codageLettres.keySet();
                 Iterator it = cles.iterator();
+                String[] codageLettresTableau = new String[256];
                 while (it.hasNext()){
                    Integer cle = (Integer)it.next();
                    String valeur = (String)codageLettres.get(cle);
+                   codageLettresTableau[cle] = valeur;
                    enteteEtContenuAEcrire[k] = (byte)(int)cle;
                    enteteEtContenuAEcrire[k+1] = (byte)valeur.length();
                    k = k+2;
@@ -137,7 +139,7 @@ public class TraitementFichier<E> {
 		for(int i=0; i<texteALireFichierOriginal.length; i++) {
                         caractereLuCodeAscii = texteALireFichierOriginal[i];
 			// Recuperation du code correspond au caractere lu
-			codeCaractereTemp = codageLettres.get(caractereLuCodeAscii);
+			codeCaractereTemp = codageLettresTableau[caractereLuCodeAscii];
 
 			// Lecture du code bit par bit
 			for (int j = 0; j < codeCaractereTemp.length(); j++) {
