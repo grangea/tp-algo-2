@@ -1,6 +1,9 @@
 package codagehuffman;
 
 import codagehuffman.CodageHuffman;
+
+import java.awt.event.TextEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -13,31 +16,37 @@ public class TestCodageHuffman {
 
 	private static int NB_FICHIERS = 3;
 
-	public static void main(String[] args) throws FileNotFoundException, IOException {
+	public static void main(String[] args) throws FileNotFoundException,
+			IOException {
 		double start;
 		double duree;
-		//CodageHuffman[] ch = new CodageHuffman[NB_FICHIERS];
+		long txcompression;
+		CodageHuffman[] ch = new CodageHuffman[NB_FICHIERS];
 
-		/*try {
+		try {
 			for (int i = 0; i < NB_FICHIERS; i++) {
-				ch[i] = new CodageHuffman("Texte" + i + ".txt", "Texte" + i
+				ch[i] = new CodageHuffman("Textes/Texte" + i + ".txt", "Textes/Texte" + i
 						+ "Compresse.txt");
 				System.out.println("_____________________FICHIER TEXTE " + i
 						+ "_____________________");
 				start = System.nanoTime();
 				ch[i].compresserFichier();
 				duree = System.nanoTime() - start;
+				txcompression=(new File("Textes/Texte" + i + "Compresse.txt").length())*100/((new File("Textes/Texte" + i + ".txt").length()));
 				System.out
 						.println("**********************COMPRESSION*********************");
-				System.out.println("Duree d'�x�cution : " + (duree*0.000000001) + " s");
+				System.out.println("Duree d'execution : "
+						+ (duree * 0.000000001) + " s");
+				System.out.println("Taux de compression : " + txcompression + " %");
 				System.out
 						.println("*********************DECOMPRESSION*********************");
-				ch[i] = new CodageHuffman("Texte" + i + "Compresse.txt",
-						"Texte" + i + "Decompresse.txt");
+				ch[i] = new CodageHuffman("Textes/Texte" + i + "Compresse.txt",
+						"Textes/Texte" + i + "Decompresse.txt");
 				start = System.nanoTime();
 				ch[i].decompresserFichier();
 				duree = System.nanoTime() - start;
-				System.out.println("Duree d'�x�cution : " + (duree*0.000000001) + " s");
+				System.out.println("Duree d'execution : "
+						+ (duree * 0.000000001) + " s");
 				System.out
 						.println("_________________________________________________________");
 				System.out.println("");
@@ -47,10 +56,6 @@ public class TestCodageHuffman {
 			System.out.println("Le fichier est introuvable!");
 		} catch (IOException e) {
 			System.out.println("------------" + e + "------------");
-		}*/
-	CodageHuffman ch = new CodageHuffman("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexte.txt", "C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteCompresse.txt");
-        ch.compresserFichier(); 
-        CodageHuffman ch2 = new CodageHuffman("C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteCompresse.txt", "C:/Users/Romain/Documents/NetBeansProjects/CodageHuffman/src/codagehuffman/fichierTexteDecompresse.txt");
-        ch2.decompresserFichier(); 
-        }  
+		}
+	}
 }
