@@ -40,10 +40,18 @@ public class Noeud<E extends Comparable<E>> {
 				+ this.filsDroit.toString();
 	}
 	
-	/** Renvoie la valeur contenue sur le noeud */
-	public E getValeur() {
-		return this.val;
-	}
+	/** Renvoie la valeur contenue sur le noeud */       
+        public E getVal(){
+            return this.val;
+        }
+        
+        public Noeud getFilsGauche(){
+            return this.filsGauche;
+        }
+        
+        public Noeud getFilsDroit(){
+            return this.filsDroit;
+        }
 
 	/** Renvoie vrai si la valeur est pr�sente sur le noeud */
 	protected boolean estPresent(E v) {
@@ -111,84 +119,62 @@ public class Noeud<E extends Comparable<E>> {
 	}
 
 	/** Renvoie une chaine de caract�re contenant les valeurs contenues sur le noeud et ses fils */
-	public String remplissageTableauPrefixeRecursif(Hashtable<E, String> ht, String code) {
+	public String chaineParoursTableauPrefixe(String[] codageLettres, String code) {
 		String s = "";
 		String s2 = "";
 		//int h = hauteur + 1;
 
-		if (this.filsGauche == null && this.filsDroit == null
-				&& this.val != null) { // feuille
+		if (this.filsGauche == null && this.filsDroit == null && this.val != null) { // feuille
 			int l = code.length();
                         //s2 = code;
 			//s2 += "|" + val + "|" + h + "|";
-			s2 += val + "|" + l + "|";
-			ht.put(this.val,code);
+			s2 += val + "|" + (byte)(l+48) + "|";
+                        
+			codageLettres[(Integer) val] = code;
 		}
 		if (this.filsGauche != null) {
 			s = code;
 			s += "0";
-			s2 += filsGauche.remplissageTableauPrefixeRecursif(ht,s);
+			s2 += filsGauche.chaineParoursTableauPrefixe(codageLettres,s);
 		}
 		if (this.filsDroit != null) {
 			s = code;
 			s += "1";
-			s2 += filsDroit.remplissageTableauPrefixeRecursif(ht,s);
+			s2 += filsDroit.chaineParoursTableauPrefixe(codageLettres,s);
 		}
 
 		return s2;
 	}
         
-        public Noeud insererHuffman(int caractereAscii, int longueur){
-            if(longueur == 1){
+        public Noeud insererHuffman(E val, int hauteur){
+            Noeud retour = null;
+            if(hauteur == 1){
                 if(filsGauche == null){
-                    Noeud fg = new Noeud(caractereAscii);
-                    filsGauche = fg;
-                    return filsGauche;
+                    filsGauche = new Noeud(val);
+                    retour = filsGauche;
                 } else if(filsDroit == null) {
-                   Noeud fd = new Noeud(caractereAscii);
-                   filsDroit = fd;
-                   return filsDroit; 
-                } else {
-                    return null;
+                    filsDroit = new Noeud(val);
+                    retour = filsDroit;
                 }
             } else {
-                Noeud retour = null;
-                
                 if(filsGauche == null){
-                    Noeud fg = new Noeud();
-                    filsGauche = fg;
+                    filsGauche = new Noeud();
                 }      
                 if(filsGauche.val == null){
-                    retour = filsGauche.insererHuffman(caractereAscii, longueur-1);
+                    retour = filsGauche.insererHuffman(val, hauteur-1);
                 }
                 
                 if(retour == null){
                     if(filsDroit == null){
-                        Noeud fd = new Noeud();
-                        filsDroit = fd;
+                        filsDroit = new Noeud();
                     }     
                     if(filsDroit.val == null){
-                        retour = filsDroit.insererHuffman(caractereAscii, longueur-1);
+                        retour = filsDroit.insererHuffman(val, hauteur-1);
                     }
                 }
-                
-                return retour;
             }
-        }
-	
-        public E estFeuilleHuffman(String successionCode, int indice){
-            if(indice == (successionCode.length())){
-                if(this.val != null){
-                    return val;
-                }else{
-                    return null;
-                }
-            }else{
-                if(successionCode.charAt(indice) == '0'){
-                    return filsGauche.estFeuilleHuffman(successionCode, indice+1);
-                }else{
-                    return filsDroit.estFeuilleHuffman(successionCode, indice+1);
-                }
-            }
-        }
+            
+            return retour;
+        } 
+        
 }

@@ -43,12 +43,4 @@ abstract class Arbre<E extends Comparable<E>> {
 		return racine.estPresent(e);
 	}
 
-	/** Renvoie une string contenant l'affichage prefixe de l'arbre */ 
-        public String remplissageTableauPrefixeRecursif(Hashtable<E,String> ht) {
-		if (estVide())
-			return "";
-
-		return racine.remplissageTableauPrefixeRecursif(ht,"");
-	}
-
 }

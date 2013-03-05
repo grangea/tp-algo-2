@@ -48,11 +48,23 @@ public class CodageHuffman {
 		ArbreHuffman<Integer> arbre = null;
 
                 int nbCaracteresLus = tf.lireFichierACompresser(nomFichier);
-                System.out.println("Nombre de caracteres lus:" + nbCaracteresLus);
+                System.out.println("Nombre de caracteres lus : " + nbCaracteresLus);
                 
-                fileArbres.addAll(tf.arbreHuffmanLettresFichier.values());
+                if(tf.tableauArbresHuffman.length > 0){
+                    for(int i=0; i<tf.tableauArbresHuffman.length; i++){
+                        if(tf.tableauArbresHuffman[i] != null){
+                            fileArbres.add((ArbreHuffman)tf.tableauArbresHuffman[i]);
+                        }
+                    }
 
-                if (!fileArbres.isEmpty()
+                    int nbCaracteresLusDifferents = fileArbres.size();
+                    arbre = creationArbreHuffman();
+                    tf.codageLettres = new String[256];
+                    arbre.paroursTableauPrefixe(tf.codageLettres);
+                    tf.ecrireFichierACompresser(nomFichier, nomFichierModifie, nbCaracteresLus, nbCaracteresLusDifferents);
+                }
+
+                /*if (!fileArbres.isEmpty()
                                 && !tf.arbreHuffmanLettresFichier.isEmpty()) {
                         arbre = creationArbreHuffman();
                         if (arbre != null) {
@@ -61,7 +73,7 @@ public class CodageHuffman {
                                 tf.ecrireFichierACompresser(nomFichier, nomFichierModifie,
                                                 entete, nbCaracteresLus);
                         }
-                }
+                }*/
 	}
 
 	public void decompresserFichier() throws FileNotFoundException, IOException {

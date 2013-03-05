@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
-public class TraitementFichier {
+public class TraitementFichier<E> {
 	/**
 	 * @brief Traite un fichier qui doit compresser ou decompresser
 	 * @date Fevrier 2013
@@ -39,8 +39,9 @@ public class TraitementFichier {
 	 * Hashtable permettant de stocker le couple (codeASCII d'un caractere,
 	 * nombre d'occurences de ce caractere)
 	 */
+        Object[] tableauArbresHuffman;
 
-	protected Hashtable<Integer, String> codageLettres = new Hashtable<Integer, String>();
+	String[] codageLettres;
 	/**
 	 * Hastable permettant de stocker le couple(Cle:code ascii du caractere,
 	 * code binaire)
@@ -52,7 +53,9 @@ public class TraitementFichier {
 	 * caractere)
 	 */
         
-        byte[] texteALire;
+        byte[] texteALireFichierOriginal;
+        
+        
 
 	/**
 	 * Lit les caracteres du fichier a compresser Ajoute chaque caractere dans
@@ -62,19 +65,20 @@ public class TraitementFichier {
 			throws FileNotFoundException, IOException {
 		// Permet de lire le fichier a compresser
 		FileInputStream fichierTexte = new FileInputStream(nomFichierOriginal);
-                texteALire = new byte[fichierTexte.available()];
+                texteALireFichierOriginal = new byte[fichierTexte.available()];
 		// Code ASCII correspondant au caractere lu
+                tableauArbresHuffman = new Object[256];
 		int caractereLuCodeAscii;
 		int nbCaracteresLus = 0;
 
 		// Lecture des caracteres dans le fichier
-                fichierTexte.read(texteALire);
-		for(int j=0; j<texteALire.length; j++) {
-			caractereLuCodeAscii = texteALire[j];
+                fichierTexte.read(texteALireFichierOriginal);
+		for(int j=0; j<texteALireFichierOriginal.length; j++) {
+			caractereLuCodeAscii = texteALireFichierOriginal[j];
 			nbCaracteresLus++;
 			// Si le caractere n'a jamais ete vu avant
 			// On l'ajoute dans la Hashtable
-			if (!arbreHuffmanLettresFichier.containsKey(caractereLuCodeAscii)) {
+			/*if (!arbreHuffmanLettresFichier.containsKey(caractereLuCodeAscii)) {
 				arbreHuffmanLettresFichier.put(caractereLuCodeAscii,
 						new ArbreHuffman<Integer>(caractereLuCodeAscii));
 
@@ -84,8 +88,14 @@ public class TraitementFichier {
 				ArbreHuffman<Integer> arbreHuffman = arbreHuffmanLettresFichier
 						.get(caractereLuCodeAscii);
 				arbreHuffman.incrementerPriorite();
-			}
-		}
+			}*/
+                        if(tableauArbresHuffman[caractereLuCodeAscii] != null){
+                            ArbreHuffman ab = (ArbreHuffman)tableauArbresHuffman[caractereLuCodeAscii];
+                            ab.incrementerPriorite();
+                        }else{
+                            tableauArbresHuffman[caractereLuCodeAscii] = new ArbreHuffman<Integer>(caractereLuCodeAscii);
+                        }		
+                }
 		
                 return nbCaracteresLus;
 	}
@@ -96,44 +106,47 @@ public class TraitementFichier {
 	 * huffman
 	 */
 	protected void ecrireFichierACompresser(String nomFichierOriginal,
-			String nomFichierCompresse, String entete, int nbCaracteresLus)
+			String nomFichierCompresse, int nbCaracteresLus, int nbCaracteresLusDifferents)
 			throws FileNotFoundException, IOException { // A revoir    
-                //FileInputStream fichierTexte = new FileInputStream(nomFichierOriginal);
+                
                 FileOutputStream fichierTexteCompresse = new FileOutputStream(
 				nomFichierCompresse);
-                //byte[] texteALire = new byte[fichierTexte.available()];
-                byte[] enteteAEcrire = new byte[entete.length()+1];
-                byte[] contenuAEcrire = new byte[texteALire.length];                                
-                int nombreBytesContenuAEcrire = 0;
-                               
+                                
+                //String enteteAEcrire = "";                
+                    
+                byte[] enteteEtContenuAEcrire = new byte[(nbCaracteresLusDifferents*2)+texteALireFichierOriginal.length];
+                int k = 0;
+		// Enregistrement de l'entete                               
+		for (int i = 0; i < codageLettres.length; i++) {
+                    if(codageLettres[i] != null){
+                        enteteEtContenuAEcrire[k] = (byte)i;
+                        enteteEtContenuAEcrire[k+1] = Byte.parseByte(codageLettres[i]);
+                        k = k+2;
+                    }
+		}
+                                     
+                // Enregistrement du contenu après traduction grace au codage de Huffman
+                int nombreBytesContenuAEcrire = k;
 		String codeCaractereTemp;
                 int caractereLuCodeAscii;
                 int offset = 0;
 		int bits = 0;
-                int finOctet = 0;
-
-		// Enregistrement de l'entete
-		for (int i = 0; i < entete.length() - 1; i++) {
-                        enteteAEcrire[i] = (byte)entete.charAt(i);
-		}   
-                
-		// Enregistrement du contenu après traduction grace au codage de Huffman
-                //fichierTexte.read(texteALire);
-		for(int j=0; j<texteALire.length; j++) {
-                        caractereLuCodeAscii = texteALire[j];
+                int finOctet = 0;                
+		for(int i=0; i<texteALireFichierOriginal.length; i++) {
+                        caractereLuCodeAscii = texteALireFichierOriginal[i];
 			// Recuperation du code correspond au caractere lu
-			codeCaractereTemp = codageLettres.get(caractereLuCodeAscii);
+			codeCaractereTemp = codageLettres[caractereLuCodeAscii];
 
 			// Lecture du code bit par bit
-			for (int i = 0; i < codeCaractereTemp.length(); i++) {
-				if (codeCaractereTemp.charAt(i) == '0') {
+			for (int j = 0; j < codeCaractereTemp.length(); j++) {
+				if (codeCaractereTemp.charAt(j) == '0') {
 					bits <<= 1;
 				} else {
 					bits = bits << 1 | 1;
 				}
 				offset++;
 				if (offset == 8) {
-                                        contenuAEcrire[nombreBytesContenuAEcrire] = (byte)bits;
+                                        enteteEtContenuAEcrire[nombreBytesContenuAEcrire] = (byte)bits;
                                         nombreBytesContenuAEcrire++;
 					bits = 0;
 					offset = 0;
@@ -146,25 +159,21 @@ public class TraitementFichier {
                         offset++;
                     }
                     // Enregistrement du dernier octet (il y aura (8-finOctet) bits de bourrage dans le dernier octet)
-                    contenuAEcrire[nombreBytesContenuAEcrire] = (byte)bits;
+                    enteteEtContenuAEcrire[nombreBytesContenuAEcrire] = (byte)bits;
                     nombreBytesContenuAEcrire++;
                 }        
-                
-                // Enregisrement dans l'entete du separateur et du nombre de bits significatifs du dernier octet
-                enteteAEcrire[entete.length()-1] = (byte)';';
-                enteteAEcrire[entete.length()] = (byte)(finOctet+48); 
                
-                // Ecriture de l'entete et du contenu
+                // Ecriture de l'entete et du contenu            
                 fichierTexteCompresse.write((String.valueOf(nbCaracteresLus)+';').getBytes());
-                fichierTexteCompresse.write(enteteAEcrire);                
-                fichierTexteCompresse.write(contenuAEcrire,0,nombreBytesContenuAEcrire);
+                fichierTexteCompresse.write((String.valueOf(nbCaracteresLusDifferents)+';').getBytes());
+                fichierTexteCompresse.write(enteteEtContenuAEcrire,0,nombreBytesContenuAEcrire);
                 
 		//fichierTexte.close();
 		fichierTexteCompresse.close();
 
-		System.out
+		/*System.out
 				.println("Nombre de caracteres differents : "
-						+ codageLettres.size());
+						+ codageLettres.length());*/
 	}
 
 	/**
@@ -183,174 +192,86 @@ public class TraitementFichier {
 		boolean estEntete = true;
 		boolean entreeEntiere = false;
 		String codeAsciiCaractere = "";
-		String codeCaractere = "";
-		int caractereLuCodeAscii;               
-                //Hashtable<String, Integer> decodageLettresTmp = new Hashtable<String, Integer>();
+		String codeCaractere = "";              
 
-		/*while (estEntete) {
-			caractereLuCodeAscii = fichierCompresse.read();
-			caractereLuChar = (char) caractereLuCodeAscii; // A voir si c crade
-															// ou pas
-			if (caractereLuChar == ';') {
-				estEntete = false;
-				decodageLettres.put(codeCaractere,
-						Integer.parseInt(codeAsciiCaractere));
-				codeCaractere = "";
-			} else if ((char) caractereLuCodeAscii == '|') {
-				if (entreeEntiere) {
-					decodageLettres.put(codeCaractere,
-							Integer.parseInt(codeAsciiCaractere));
-					codeAsciiCaractere = "";
-					codeCaractere = "";
-					entreeEntiere = false;
-				} else {
-					entreeEntiere = true;
-				}
-			} else {
-				if (entreeEntiere) { // On a fini de trouver la valeur de
-										// l'entree
-					codeAsciiCaractere += caractereLuChar;
-				} else { // On a fini de trouver la cle de l'entree
-					codeCaractere += caractereLuChar;
-				}
-			}
-		}*/
                 byte[] buffer = new byte[fichierCompresse.available()]; 
-                fichierCompresse.read(buffer);
-                int i=0;
+                fichierCompresse.read(buffer);                
                 String nbCaracteresLusString = "";
                 int nbCaracteresLus;
+                String nbCaracteresLusDifferentsString = "";
+                int nbCaracteresDifferentsLus;
+                int i=0;
+                int j=0;
                 
                 for(i=0; buffer[i]!=';'; i++){
                     nbCaracteresLusString += buffer[i]-48;
                 }
                 nbCaracteresLus = Integer.parseInt(nbCaracteresLusString);
                 
-                ArbreHuffman af = new ArbreHuffman();
-                while (estEntete) {
-                        i++;
-			caractereLuCodeAscii = buffer[i];                        
-															
-			if (caractereLuCodeAscii == '|' || caractereLuCodeAscii == ';') {
-				if (entreeEntiere) {
-					// créer noeud
-                                        af.insererHuffman(Integer.parseInt(codeCaractere),Integer.parseInt(codeAsciiCaractere));                          
-                                    
-                                        codeAsciiCaractere = "";
-                                        codeCaractere = "";
-					entreeEntiere = false;
-				} else {
-					entreeEntiere = true;
-				}
-                                
-                                if(caractereLuCodeAscii == ';'){
-                                    estEntete = false;
-                                    codeCaractere = "";
-                                    i++;
-                                }
-			} else {
-				if (entreeEntiere) { // On a fini de lire la longueur associée
-					codeAsciiCaractere += caractereLuCodeAscii-48;
-                                        System.out.println("Longueur : "+codeAsciiCaractere);
-				} else { // On a fini de lire le code ASCII du caractère
-					codeCaractere += caractereLuCodeAscii-48;
-                                        System.out.println("Code ASCII : "+codeCaractere);
-				}
-			}
-		}
-                int nombreBitsDeBourrageDernierOctet = buffer[i]-48;                
-		// ----- Fin de la lecture de l'entete et de la génération de la hashtable temporaire ------
+                for(i = i+1; buffer[i]!=';'; i++){
+                    nbCaracteresLusDifferentsString += buffer[i]-48;
+                }
+                nbCaracteresDifferentsLus = Integer.parseInt(nbCaracteresLusDifferentsString);
                 
-                // ----- Tri de la hashtable temporaire pour obtenir une linkedhashtable triée par éléments les plus souvent accédés ------
-                /*List<Entry<String, Integer>> entries = new ArrayList<Entry<String, Integer>>(decodageLettresTmp.entrySet());
-                Collections.sort(entries, new Comparator<Entry<String, Integer>>() {
-                  public int compare(final Entry<String, Integer> e1, final Entry<String, Integer> e2) {
-                    if(e1.getKey().length() > e2.getKey().length()){
-                        return 1;
-                    }else if(e1.getKey().length() < e2.getKey().length()){
-                        return -1;
-                    }else{
-                        return 0;
-                    }
-                  }
-                }); 
-                for (final Entry<String, Integer> entry : entries) {
-                  decodageLettres.put(entry.getKey(), entry.getValue());
-                }*/
-                // ----- Fin du tri de la hashtable temporaire pour obtenir une linkedhashtable triée par éléments les plus souvent accédés ------
-
-
+                ArbreBinaire<Integer> af = new ArbreBinaire();
+                for(i = i+1; nbCaracteresDifferentsLus > 0; i=i+2){
+                    System.out.println("Code ascii : "+(int)buffer[i]);
+                    System.out.println("Code car : "+Integer.parseInt(Byte.toString(buffer[i+1]),2));
+                    af.insererNoeudHauteurPrecise((int)buffer[i],Integer.parseInt(Byte.toString(buffer[i+1]),2)); 
+                    nbCaracteresDifferentsLus--;
+		}              
+		// ----- Fin de la lecture de l'entete et de la génération de la hashtable temporaire ------              
                 
-                
+                // ----- Lecture du texte code et decompression ---------------------
+                if(!af.estVide()){ // L'arbre reconstruit n'est pas vide
+                    byte[] texteAEcrireFichierDecompresse = new byte[nbCaracteresLus];
+                    int nombreCaracteresEcritsFichierDecompresse = 0;
+                    int[] masques = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
-                /*for(int i = 0; i < buffer.length; i++)
-                    bufferi[i] = Integer.valueOf(buffer[i]);*/
-                /*int[] cc = new int[buffer.length];
-                for(int i=0; i<buffer.length; i++){
-                    int essai=buffer[i];
-                    if(essai<0)
-                        {
-                        cc[i] = 256+buffer[i];
-                        }
-                    else
-                        {
-                        cc[i] =buffer[i];
-                        }
-                }*/
-              
-                byte[] texteAEcrire = new byte[nbCaracteresLus];
-                  
-		// ----- Lecture du texte code et decompression ---------------------
-                Integer codeAsciiAEcrire;
-                int k=0;
-                int[] masques = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
+                    Noeud noeudTmp = af.racine;
+                    Integer valNoeud;
 
-                for(i=i+1; i<(buffer.length-1); i++){  
-                    for(int j=7; j>=0; j--){                    
-                        if((buffer[i] & masques[j]) == 0)
-                            codeCaractere += '0';
-                        else
-                            codeCaractere += '1';
-                        
-                        /*if (this.decodageLettres.containsKey(codeCaractere)) {
-                                fichierDecompresse.write(this.decodageLettres.get(codeCaractere));
-				codeCaractere = "";
-			}    */
-                        codeAsciiAEcrire = (Integer)af.existeFeuille(codeCaractere);
-                        if(codeAsciiAEcrire != null){
-                            texteAEcrire[k] = (byte)(int)codeAsciiAEcrire;
-                            k++;
-                            //fichierDecompresse.write(codeAsciiAEcrire);
-                            codeCaractere = "";
-                            /*String cc = String.valueOf(codeAsciiAEcrire);
-                            texteAEcrire.concat(cc);*/
+                    for(i = i+1; nombreCaracteresEcritsFichierDecompresse < nbCaracteresLus; i++){  
+                        for(j=7; (j >= 0) && (nombreCaracteresEcritsFichierDecompresse < nbCaracteresLus); j--){                    
+                            if((buffer[i] & masques[j]) == 0)
+                                noeudTmp = noeudTmp.getFilsGauche();
+                            else
+                                noeudTmp = noeudTmp.getFilsDroit();
+
+                            valNoeud = (Integer)noeudTmp.getVal();
+
+                            if(valNoeud != null){ // Ecriture du caractère
+                                texteAEcrireFichierDecompresse[nombreCaracteresEcritsFichierDecompresse] = (byte)(int)valNoeud;
+                                nombreCaracteresEcritsFichierDecompresse++;
+                                noeudTmp = af.racine;                                
+                            }
                         }
                     }
-		}
-                // Ecriture du dernier byte
-                for(int j=7; j>=nombreBitsDeBourrageDernierOctet; j--){                    
-                    if((buffer[i] & masques[j]) == 0) {
-                        codeCaractere += '0';
-                    } else {
-                        codeCaractere += '1';
-                    }
 
-                    codeAsciiAEcrire = (Integer)af.existeFeuille(codeCaractere);
-                    if(codeAsciiAEcrire != null){
-                            //fichierDecompresse.write(codeAsciiAEcrire);
-                        texteAEcrire[k] = (byte)(int)codeAsciiAEcrire;
-                        k++;
-                            codeCaractere = "";
-                            /*String cc = String.valueOf(codeAsciiAEcrire);
-                            texteAEcrire.concat(cc);*/
-                    }
-                }                
-		// ----- Fin de la lecture du texte code ----------------------------
-                
-                fichierDecompresse.write(texteAEcrire);
-                
-		fichierCompresse.close();
-		fichierDecompresse.close();
+                    // Cas du dernier byte à écrire
+                    /*if(j != -1){ // Le dernier byte n'est pas terminé                  
+                        for(j = (7-j); j >= 0; j--){                    
+                            if((buffer[i-1] & masques[j]) == 0)
+                                    noeudTmp = noeudTmp.getFilsGauche();
+                            else
+                                    noeudTmp = noeudTmp.getFilsDroit();
+
+                            valNoeud = (Integer)noeudTmp.getVal();
+
+                            if(valNoeud != null){ // Ecriture du caractère
+                                    texteAEcrireFichierDecompresse[nombreCaracteresEcritsFichierDecompresse] = (byte)(int)valNoeud;
+                                    nombreCaracteresEcritsFichierDecompresse++;
+                                    noeudTmp = af.racine;
+                           }
+                        }  
+                    }*/
+                    // ----- Fin de la lecture du texte code ----------------------------
+
+                    fichierDecompresse.write(texteAEcrireFichierDecompresse);
+                }
+
+                fichierCompresse.close();
+                fichierDecompresse.close();
 	}
 
 }
