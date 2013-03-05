@@ -3,6 +3,7 @@ package codagehuffman;
 import codagehuffman.Arbre;
 import codagehuffman.ArbreBinaire;
 import codagehuffman.Noeud;
+import java.util.Hashtable;
 
 public class ArbreBinaire<E extends Comparable<E>> extends Arbre<E> {
 	/**
@@ -42,5 +43,20 @@ public class ArbreBinaire<E extends Comparable<E>> extends Arbre<E> {
 		Noeud<E> racine = new Noeud<E>(val, noeudFilsGauche, noeudFilsDroit);
 		this.racine = racine;
 	}
+        
+        
+	/** Renvoie une string contenant l'affichage prefixe de l'arbre */ 
+        public void paroursTableauPrefixe(String[] codageLettres){
+		if (!estVide()){                             
+                    racine.chaineParoursTableauPrefixe(codageLettres, "");
+                }
+	}
+        
+        public Noeud insererNoeudHauteurPrecise(E val, int hauteur){
+            if (estVide())
+                racine = new Noeud();
+            
+            return racine.insererHuffman(val, hauteur);
+        }
         
 }
