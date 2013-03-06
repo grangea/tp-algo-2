@@ -20,12 +20,12 @@ public class TraitementFichier<E> {
     
        
 
-	LinkedHashMap<Integer,String> associationsCodeAsciiCodeHuffman;
+	protected LinkedHashMap<Integer,String> associationsCodeAsciiCodeHuffman;
 	/**
 	 * Hastable permettant de stocker le couple(Cle:code ascii du caractere,
 	 * code binaire)
 	 */
-        FileInputStream fichierCompresse;
+        private FileInputStream fichierCompresse;
         
         
 
@@ -69,14 +69,14 @@ public class TraitementFichier<E> {
 	 * huffman
 	 */
 	protected void ecritureFichierCompresse(String nomFichierOriginal,
-			String nomFichierCompresse, int nbCaracteresLus, int nbCaracteresLusDifferents)
+			String nomFichierCompresse, int nbCaracteresDifferentsLus)
 			throws FileNotFoundException, IOException { // A revoir    
                 
                 FileInputStream fichierTexteOriginal = new FileInputStream(nomFichierOriginal);
                 FileOutputStream fichierTexteCompresse = new FileOutputStream(nomFichierCompresse);
                                                 
                 byte[] texteLuFichierOriginal = new byte[fichierTexteOriginal.available()]; // Alloue l'espace mémoire nécessaire pour stocker le contenu du fichier original    
-                byte[] enteteEtContenuAEcrire = new byte[(nbCaracteresLusDifferents*2)+texteLuFichierOriginal.length];
+                byte[] enteteEtContenuAEcrire = new byte[(nbCaracteresDifferentsLus*2)+texteLuFichierOriginal.length];
                 String[] associationsCodeAsciiCodeHuffmanTableau = new String[256];
                 String codeCaractereHuffman;
                 int nombreBytesEcrits = 0;
@@ -124,7 +124,7 @@ public class TraitementFichier<E> {
 			}
 		}                
                 if(offset != 8){ // Dans ce cas, le dernier byte n'est pas complet, il faut "bourrer"
-                    for(int j=0; offset<8; j++){
+                    for(int j = 0; offset < 8; j++){
                         bits = bits << 1;
                         offset++;
                     }
@@ -135,29 +135,21 @@ public class TraitementFichier<E> {
                 }        
                
                 // Ecriture du nb de caracteres lus et differents et du tableau de bytes (entete et contenu)       
-                fichierTexteCompresse.write((String.valueOf(nbCaracteresLus)+';').getBytes());
-                fichierTexteCompresse.write((String.valueOf(nbCaracteresLusDifferents)+';').getBytes());
+                fichierTexteCompresse.write((String.valueOf(nbCaracteresDifferentsLus)+';').getBytes());
                 fichierTexteCompresse.write(enteteEtContenuAEcrire,0,nombreBytesEcrits);
                 
 		fichierTexteOriginal.close();
 		fichierTexteCompresse.close();
 
-		System.out.println("Nombre de caracteres differents : " + nbCaracteresLusDifferents);
+		System.out.println("Nombre de caracteres differents : " + nbCaracteresDifferentsLus);
 	}
         
        protected ArbreBinaire<Integer> lectureEnteteFichierCompresse(String nomFichierCompresse) throws FileNotFoundException, IOException{
            fichierCompresse = new FileInputStream(nomFichierCompresse);
            int caractereLuCodeAscii;
-           String nbCaracteresLusString = "";
-           int nbCaracteresALire;
            String nbCaracteresLusDifferentsString = "";
            int nbCaracteresDifferentsALire;
            ArbreBinaire<Integer> arbre = new ArbreBinaire();
-           
-           while((caractereLuCodeAscii = fichierCompresse.read()) != ';'){
-                nbCaracteresLusString += (char)caractereLuCodeAscii;
-           }
-           nbCaracteresALire = Integer.parseInt(nbCaracteresLusString);
            
            while((caractereLuCodeAscii = fichierCompresse.read()) != ';'){
                 nbCaracteresLusDifferentsString += (char)caractereLuCodeAscii;
@@ -181,22 +173,32 @@ public class TraitementFichier<E> {
 			String nomFichierDecompresse, ArbreBinaire<Integer> arbre) throws FileNotFoundException,
 			IOException {
 
-		FileOutputStream fichierDecompresse = new FileOutputStream(nomFichierDecompresse);
-                int nombreCaracteresEcritsFichierDecompresse = 0;
-                int[] masques = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
-                int caractereLuCodeAscii;
+                FileOutputStream fichierDecompresse = new FileOutputStream(nomFichierDecompresse);
+                
+                byte[] contenuFichierCompresse = new byte[1000];  
+                byte[] contenuFichierDecompresse = new byte[8000];
+                int[] masques = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};                
                 Noeud noeudTmp = arbre.getRacine();
-                Integer valNoeud;
-		//byte[] texteAEcrireFichierDecompresse = new byte[1000];             
+                Integer valNoeud;		
+                int nbCaracteresEcrits;
+                int nbCaracteresALire;
                 
-                // ----- Lecture du texte code et decompression ---------------------
-                
+                while(fichierCompresse.available() > 0){ // On lit dans le buffer de lecture tant qu'il y a des caracteres
+                    nbCaracteresEcrits = 0;
                     
-                    //texteAEcrireFichierDecompresse = new byte[1000];
-
-                    while((caractereLuCodeAscii = fichierCompresse.read()) != -1){  
-                        for(int j=7; (j >= 0); j--){                    
-                            if((caractereLuCodeAscii & masques[j]) == 0){
+                    // On cherche à savoir si on traite le dernier bloc de 1000 bytes
+                    if(fichierCompresse.available() >= 1000){
+                        nbCaracteresALire = fichierCompresse.read(contenuFichierCompresse, 0, 1000);
+                    }else{
+                        nbCaracteresALire = fichierCompresse.read(contenuFichierCompresse, 0, fichierCompresse.available());
+                    }
+                    
+                    // On traite chaque byte du bloc de 1000 bytes
+                    for(int k = 0; (k < nbCaracteresALire) && (nbCaracteresALire > nbCaracteresEcrits); k++){ 
+                        // On traite chaque bit de chaque byte
+                        for(int j=7; (j >= 0); j--){          
+                            // On cherche dans l'arbre à gauche ou à droite selon le bit
+                            if((contenuFichierCompresse[k] & masques[j]) == 0){
                                 noeudTmp = noeudTmp.getFilsGauche();
                             }else{
                                 noeudTmp = noeudTmp.getFilsDroit();
@@ -204,17 +206,18 @@ public class TraitementFichier<E> {
 
                             valNoeud = (Integer)noeudTmp.getVal();
 
-                            if(valNoeud != null){ // Ecriture du caractère
-                                //texteAEcrireFichierDecompresse[nombreCaracteresEcritsFichierDecompresse] = (byte)(int)valNoeud;
-                                //nombreCaracteresEcritsFichierDecompresse++;
-                                fichierDecompresse.write((byte)(int)valNoeud);
-                                noeudTmp = arbre.getRacine();                                
+                            if(valNoeud != null){ // Ecriture du caractère car le noeud est une feuille (contient une valeur différente de null)
+                                contenuFichierDecompresse[nbCaracteresEcrits] = (byte)(int)valNoeud; // Ajout de la valeur a ecrire dans le bloc
+                                nbCaracteresEcrits++;
+                                noeudTmp = arbre.getRacine();                                            
                             }
                         }
                     }
-                    // ----- Fin de la lecture du texte code ----------------------------
+                    
+                    fichierDecompresse.write(contenuFichierDecompresse,0,nbCaracteresEcrits); // Ecriture du bloc
+                }
 
-                    //fichierDecompresse.write(texteAEcrireFichierDecompresse);
+                //fichierDecompresse.write(texteAEcrireFichierDecompresse);
 
                 fichierCompresse.close();
                 fichierDecompresse.close();

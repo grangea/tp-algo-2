@@ -71,7 +71,7 @@ public class CodageHuffman {
                     arbre.paroursPrefixe(traitementFichier.associationsCodeAsciiCodeHuffman);
                     
                     // Ecriture des caracteres du fichier original dans un fichier compresse (en les ayant traduit par leur code de Huffman associé)
-                    traitementFichier.ecritureFichierCompresse(nomFichierAModifier, nomFichierModifie, nbCaracteresLus, nbCaracteresDifferentsLus);
+                    traitementFichier.ecritureFichierCompresse(nomFichierAModifier, nomFichierModifie, nbCaracteresDifferentsLus);
                 }
 	}
 
