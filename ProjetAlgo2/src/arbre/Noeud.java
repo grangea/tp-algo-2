@@ -83,8 +83,8 @@ public class Noeud<E> {
 	 * Ajoute une entrée dans la liste chaînée codageLettres si ce noeud est une racine
          * sinon se déplace récursivement dans ses fils de manière préfixée
 	 * 
-	 * @param linkedHashMap
-	 *            <String,Integer>
+	 * @param linkedHashMap<String,Integer>
+         * 
 	 */
 	public void parcoursPrefixe(LinkedHashMap<Integer, String> codageLettres,
 			String codeCaractere) {
