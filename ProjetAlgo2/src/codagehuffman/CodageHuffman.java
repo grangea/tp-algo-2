@@ -1,5 +1,6 @@
 package codagehuffman;
 
+import arbre.ArbreBinaire;
 import arbre.ArbreHuffman;
 import arbre.Noeud;
 import java.io.FileNotFoundException;
@@ -31,32 +32,33 @@ public class CodageHuffman {
 
 	}
 
-	private PriorityQueue<ArbreHuffman> fileArbres;
-	private String nomFichierOriginal = "";
+	private PriorityQueue<ArbreHuffman<Integer>> fileArbres;
+	private String nomFichierAModifier = "";
 	private String nomFichierModifie = "";
+        private TraitementFichier traitementFichier;
 
-	public CodageHuffman(String nomFichier, String nomFichierModifie) {
-		this.nomFichierOriginal = nomFichier;
+	public CodageHuffman(String nomFichierAModifier, String nomFichierModifie) {
+		this.nomFichierAModifier = nomFichierAModifier;
 		this.nomFichierModifie = nomFichierModifie;
 	}
 
 	public void compresserFichier() throws FileNotFoundException, IOException {
-		ArbreHuffman<Integer> arbre;                
-                TraitementFichier tf = new TraitementFichier();
+                traitementFichier = new TraitementFichier();
+		ArbreHuffman<Integer> arbre;           
                 int nbCaracteresDifferentsLus = 0;
 
                 // Lecture du fichier original afin d'obtenir un tableau d'associations (code ascii - arbres de huffman)
-                int nbCaracteresLus = tf.lectureFichierOriginal(nomFichierOriginal);
+                int nbCaracteresLus = traitementFichier.lectureFichierOriginal(nomFichierAModifier);
                 System.out.println("Nombre de caracteres lus : " + nbCaracteresLus);                
                 
-                if(tf.associationsCodeAsciiArbresHuffman.length > 0){ // Le fichier a ompresser n'est pas vide
+                if(traitementFichier.associationsCodeAsciiArbresHuffman.length > 0){ // Le fichier a ompresser n'est pas vide
                     Comparator comparator = new PrioriteArbreHuffmanComparator();
-                    fileArbres = new PriorityQueue(tf.associationsCodeAsciiArbresHuffman.length, comparator);
+                    fileArbres = new PriorityQueue(traitementFichier.associationsCodeAsciiArbresHuffman.length, comparator);
                     
-                    // Ajout de chaque arbre de huffman dans une file triée selon la priorité de l'arbre en quetion
-                    for(int i = 0; i < tf.associationsCodeAsciiArbresHuffman.length; i++){
-                        if(tf.associationsCodeAsciiArbresHuffman[i] != null){
-                            fileArbres.add((ArbreHuffman<Integer>)tf.associationsCodeAsciiArbresHuffman[i]);
+                    // Ajout de chaque arbre de huffman dans une file triée selon la priorité de l'arbre en question
+                    for(int i = 0; i < traitementFichier.associationsCodeAsciiArbresHuffman.length; i++){
+                        if(traitementFichier.associationsCodeAsciiArbresHuffman[i] != null){
+                            fileArbres.add((ArbreHuffman<Integer>)traitementFichier.associationsCodeAsciiArbresHuffman[i]);
                             nbCaracteresDifferentsLus++;
                         }
                     }
@@ -65,17 +67,17 @@ public class CodageHuffman {
                     arbre = creationArbreHuffman();
                     
                     // Parcours de l'arbre genere afin d'obtenir une liste chaînée d'associations (symbole - code de Huffma nassocié)
-                    tf.associationsCodeAsciiCodeHuffman = new LinkedHashMap();
-                    arbre.paroursPrefixe(tf.associationsCodeAsciiCodeHuffman);
+                    traitementFichier.associationsCodeAsciiCodeHuffman = new LinkedHashMap();
+                    arbre.paroursPrefixe(traitementFichier.associationsCodeAsciiCodeHuffman);
                     
                     // Ecriture des caracteres du fichier original dans un fichier compresse (en les ayant traduit par leur code de Huffman associé)
-                    tf.ecritureFichierCompresse(nomFichierOriginal, nomFichierModifie, nbCaracteresLus, nbCaracteresDifferentsLus);
+                    traitementFichier.ecritureFichierCompresse(nomFichierAModifier, nomFichierModifie, nbCaracteresLus, nbCaracteresDifferentsLus);
                 }
 	}
 
 	public void decompresserFichier() throws FileNotFoundException, IOException {
-            TraitementFichier tf = new TraitementFichier();
-            tf.lireEcrireFichierADecompresser(nomFichierOriginal, nomFichierModifie);
+            ArbreBinaire<Integer> arbre = recreationArbre();
+            traitementFichier.ecritureFichierDecompresse(nomFichierAModifier, nomFichierModifie, arbre);
 	}
 
 	private ArbreHuffman<Integer> creationArbreHuffman() {
@@ -101,5 +103,10 @@ public class CodageHuffman {
                 
 		return arbreLePlusPrioritaire;
 	}
+        
+        private ArbreBinaire<Integer> recreationArbre() throws FileNotFoundException, IOException{
+            traitementFichier = new TraitementFichier();
+            return traitementFichier.lectureEnteteFichierCompresse(nomFichierAModifier);
+        }
 
 }
