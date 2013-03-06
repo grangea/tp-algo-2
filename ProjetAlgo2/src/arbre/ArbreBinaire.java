@@ -48,7 +48,7 @@ public class ArbreBinaire<E> extends Arbre<E> {
 			noeudFilsDroit = filsDroit.getRacine();
 		}
 
-		Noeud<E> racine = new Noeud(val, noeudFilsGauche, noeudFilsDroit);
+		Noeud<E> racine = new Noeud<E>(val, noeudFilsGauche, noeudFilsDroit);
 		this.setRacine(racine);
 	}
 
@@ -79,7 +79,7 @@ public class ArbreBinaire<E> extends Arbre<E> {
 	 * */
 	public Noeud<E> insererNoeudHauteurPrecise(E val, int hauteur) {
 		if (estVide())
-			setRacine(new Noeud());
+			setRacine(new Noeud<E>());
 
 		return getRacine().insererNoeudHauteurPrecise(val, hauteur);
 	}

@@ -21,7 +21,7 @@ abstract class Arbre<E> {
 	 *            valeur contenue par la racine
 	 */
 	public Arbre(E val) {
-		this.racine = new Noeud(val);
+		this.racine = new Noeud<E>(val);
 	}
 
 	/**

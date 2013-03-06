@@ -23,7 +23,7 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	 *            portee par sa racine
 	 * */
 	public ArbreHuffman(E val) {
-		Noeud<E> racine = new Noeud(val);
+		Noeud<E> racine = new Noeud<E>(val);
 		this.setRacine(racine);
 		this.priorite = 1;
 	}
@@ -37,7 +37,7 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	 *            de cet arbre
 	 */
 	public ArbreHuffman(E val, int priorite) {
-		Noeud<E> racine = new Noeud(val);
+		Noeud<E> racine = new Noeud<E>(val);
 		this.setRacine(racine);
 		this.priorite = priorite;
 	}

@@ -118,15 +118,15 @@ public class Noeud<E> {
 		Noeud<E> retour = null;
 		if (hauteur == 1) {
 			if (filsGauche == null) {
-				filsGauche = new Noeud(val);
+				filsGauche = new Noeud<E>(val);
 				retour = filsGauche;
 			} else if (filsDroit == null) {
-				filsDroit = new Noeud(val);
+				filsDroit = new Noeud<E>(val);
 				retour = filsDroit;
 			}
 		} else {
 			if (filsGauche == null) {
-				filsGauche = new Noeud();
+				filsGauche = new Noeud<E>();
 			}
 			if (filsGauche.val == null) {
 				retour = filsGauche.insererNoeudHauteurPrecise(val, hauteur - 1);
@@ -134,7 +134,7 @@ public class Noeud<E> {
 
 			if (retour == null) {
 				if (filsDroit == null) {
-					filsDroit = new Noeud();
+					filsDroit = new Noeud<E>();
 				}
 				if (filsDroit.val == null) {
 					retour = filsDroit.insererNoeudHauteurPrecise(val, hauteur - 1);
