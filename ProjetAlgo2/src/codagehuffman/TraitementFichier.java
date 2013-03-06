@@ -1,14 +1,13 @@
 package codagehuffman;
 
+import arbre.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import arbre.*;
 
 public class TraitementFichier<E> {
 	/**
@@ -17,54 +16,48 @@ public class TraitementFichier<E> {
 	 * @author Alice GRANGE & Romain LHORTOLAT
 	 */
 	
-	protected Hashtable<Integer, ArbreHuffman<Integer>> arbreHuffmanLettresFichier = new Hashtable<Integer, ArbreHuffman<Integer>>();
-	/**
-	 * Hashtable permettant de stocker le couple (codeASCII d'un caractere,
-	 * nombre d'occurences de ce caractere)
-	 */
-        Object[] tableauArbresHuffman;
+        protected Object[] associationsCodeAsciiArbresHuffman;
+    
+       
 
-	LinkedHashMap<Integer,String> codageLettres;
+	LinkedHashMap<Integer,String> associationsCodeAsciiCodeHuffman;
 	/**
 	 * Hastable permettant de stocker le couple(Cle:code ascii du caractere,
 	 * code binaire)
 	 */
-
-	private Hashtable<String, Integer> decodageLettres = new Hashtable<String, Integer>();
-	/**
-	 * Hashtable permettant de stocker le couple(Cle:code binaire, code ascii du
-	 * caractere)
-	 */
         
-        byte[] texteALireFichierOriginal;
+        
         
         
 
 	/**
-	 * Lit les caracteres du fichier a compresser Ajoute chaque caractere dans
-	 * la Hashtable si non present Sinon modifie leur priorite
+	 * Lit les caracteres du fichier original que l'on souhaite compresser, puis
+         * ajoute le code ascii du caractere dans le tableau tableauArbresHuffman (en 
+         * ayant au préalable créé un arbre de Huffman pour ce caractere) si le caractere 
+         * n'est pas déjà présent dans le tableau sinon incremente la priorite de l'arbre 
+         * de Huffman correspondant à ce caractère
 	 */
-	protected int lireFichierACompresser(String nomFichierOriginal)
+	protected int lectureFichierOriginal(String nomFichierOriginal)
 			throws FileNotFoundException, IOException {
-		// Permet de lire le fichier a compresser
-		FileInputStream fichierTexte = new FileInputStream(nomFichierOriginal);
-                texteALireFichierOriginal = new byte[fichierTexte.available()];
-		// Code ASCII correspondant au caractere lu
-                tableauArbresHuffman = new Object[256];
-		int caractereLuCodeAscii;
+            
+		FileInputStream fichierTexteOriginal = new FileInputStream(nomFichierOriginal); // Permet de lire le fichier a compresser
+                byte[] texteLuFichierOriginal; // Permet de stocker le contenu du fichier orignal
+                int caractereLuCodeAscii; // Code ASCII du caractere lu
 		int nbCaracteresLus = 0;
 
-		// Lecture des caracteres dans le fichier
-                fichierTexte.read(texteALireFichierOriginal);
-		for(int j=0; j<texteALireFichierOriginal.length; j++) {
-			caractereLuCodeAscii = texteALireFichierOriginal[j];
+                texteLuFichierOriginal = new byte[fichierTexteOriginal.available()]; // Alloue l'espace mémoire nécessaire pour stocker le contenu du fichier original
+		associationsCodeAsciiArbresHuffman = new Object[256]; // Alloue l'espace mémoire nécessaire pour stocker les arbres de Huffman correspondants aux 256 caractères du code ASCII
+                
+                // --- Traitement des caracteres du fichier original et creation des arbres de Huffman associés ---
+                fichierTexteOriginal.read(texteLuFichierOriginal); // Lecture du contenu du fichier original
+		for(int j = 0; j < texteLuFichierOriginal.length; j++) { // Traitement de chaque caractere lu
+			caractereLuCodeAscii = texteLuFichierOriginal[j];
 			nbCaracteresLus++;
 			
-                        if(tableauArbresHuffman[caractereLuCodeAscii] != null){
-                            ArbreHuffman ab = (ArbreHuffman)tableauArbresHuffman[caractereLuCodeAscii];
-                            ab.incrementerPriorite();
-                        }else{
-                            tableauArbresHuffman[caractereLuCodeAscii] = new ArbreHuffman<Integer>(caractereLuCodeAscii);
+                        if(associationsCodeAsciiArbresHuffman[caractereLuCodeAscii] != null){ // Arbre de Huffman déjà existant dans le tableau
+                            ((ArbreHuffman<Integer>)associationsCodeAsciiArbresHuffman[caractereLuCodeAscii]).incrementerPriorite();
+                        }else{ // Arbre de Huffman non existant dans le tableau : création de l'arbre de Huffman
+                            associationsCodeAsciiArbresHuffman[caractereLuCodeAscii] = new ArbreHuffman(caractereLuCodeAscii);
                         }		
                 }
 		
@@ -76,80 +69,84 @@ public class TraitementFichier<E> {
 	 * l'aide des codes des caractEres que l'on a determine avec notre arbre de
 	 * huffman
 	 */
-	protected void ecrireFichierACompresser(String nomFichierOriginal,
+	protected void ecritureFichierCompresse(String nomFichierOriginal,
 			String nomFichierCompresse, int nbCaracteresLus, int nbCaracteresLusDifferents)
 			throws FileNotFoundException, IOException { // A revoir    
                 
-                FileOutputStream fichierTexteCompresse = new FileOutputStream(
-				nomFichierCompresse);
-                                
-                //String enteteAEcrire = "";                
-                    
-                byte[] enteteEtContenuAEcrire = new byte[(nbCaracteresLusDifferents*2)+texteALireFichierOriginal.length];
-                int k = 0;
-		// Enregistrement de l'entete    
-                Set cles = codageLettres.keySet();
-                Iterator it = cles.iterator();
-                String[] codageLettresTableau = new String[256];
+                FileInputStream fichierTexteOriginal = new FileInputStream(nomFichierOriginal);
+                FileOutputStream fichierTexteCompresse = new FileOutputStream(nomFichierCompresse);
+                                                
+                byte[] texteLuFichierOriginal = new byte[fichierTexteOriginal.available()]; // Alloue l'espace mémoire nécessaire pour stocker le contenu du fichier original    
+                byte[] enteteEtContenuAEcrire = new byte[(nbCaracteresLusDifferents*2)+texteLuFichierOriginal.length];
+                String[] associationsCodeAsciiCodeHuffmanTableau = new String[256];
+                String codeCaractereHuffman;
+                int nombreBytesEcrits = 0;
+                
+		// --- Enregistrement de chaque association (formant l'entete) dans le tableau de bytes à écrire ---
+                Set cles = associationsCodeAsciiCodeHuffman.keySet();
+                Iterator it = cles.iterator(); // Parcours grâce à un itérateur sur les clés de la liste chainee
+                Integer codeAscii;               
+                
                 while (it.hasNext()){
-                   Integer cle = (Integer)it.next();
-                   String valeur = (String)codageLettres.get(cle);
-                   codageLettresTableau[cle] = valeur;
-                   enteteEtContenuAEcrire[k] = (byte)(int)cle;
-                   enteteEtContenuAEcrire[k+1] = (byte)valeur.length();
-                   k = k+2;
+                   codeAscii = (Integer)it.next();
+                   codeCaractereHuffman = (String)associationsCodeAsciiCodeHuffman.get(codeAscii);                   
+                   associationsCodeAsciiCodeHuffmanTableau[codeAscii] = codeCaractereHuffman; // Enregistrement de l'association (codeAscii - code caractere Huffman) dans le tableau                   
+                   
+                   // Enregistrement de l'association dans le tableau de bytes à ecrire
+                   enteteEtContenuAEcrire[nombreBytesEcrits] = (byte)(int)codeAscii;
+                   enteteEtContenuAEcrire[nombreBytesEcrits+1] = (byte)codeCaractereHuffman.length();                   
+                   nombreBytesEcrits = nombreBytesEcrits+2;
                 }
                                      
-                // Enregistrement du contenu après traduction grace au codage de Huffman
-                int nombreBytesContenuAEcrire = k;
-		String codeCaractereTemp;
-                int caractereLuCodeAscii;
+                // --- Enregistrement de chaque caractere du fichier original après traduction grace au codage de Huffman ---
                 int offset = 0;
 		int bits = 0;
-                int finOctet = 0;                
-		for(int i=0; i<texteALireFichierOriginal.length; i++) {
-                        caractereLuCodeAscii = texteALireFichierOriginal[i];
-			// Recuperation du code correspond au caractere lu
-			codeCaractereTemp = codageLettresTableau[caractereLuCodeAscii];
+              
+                fichierTexteOriginal.read(texteLuFichierOriginal); // Lecture du contenu du fichier original
+		for(int i=0; i<texteLuFichierOriginal.length; i++) { // Lecture du fichier caractere par caractere
+			// Recuperation du code de huffman correspond au caractere lu
+                        codeCaractereHuffman = associationsCodeAsciiCodeHuffmanTableau[texteLuFichierOriginal[i]];
 
-			// Lecture du code bit par bit
-			for (int j = 0; j < codeCaractereTemp.length(); j++) {
-				if (codeCaractereTemp.charAt(j) == '0') {
+			// Traitement bit par bit du code Huffman obtenu pour le caractere lu
+			for (int j = 0; j < codeCaractereHuffman.length(); j++) {
+                                // Enregistrement du bit à la place correcte dans un byte
+				if (codeCaractereHuffman.charAt(j) == '0') {
 					bits <<= 1;
 				} else {
 					bits = bits << 1 | 1;
 				}
 				offset++;
-				if (offset == 8) {
-                                        enteteEtContenuAEcrire[nombreBytesContenuAEcrire] = (byte)bits;
-                                        nombreBytesContenuAEcrire++;
+				if (offset == 8) { // Le byte contient 8 bits et peut être enregistré dans le tableau de bytes a ecrire
+                                        enteteEtContenuAEcrire[nombreBytesEcrits] = (byte)bits;
+                                        nombreBytesEcrits++;
 					bits = 0;
 					offset = 0;
 				}
 			}
 		}                
-                if(offset != 8){ // Dans ce cas, le dernier octet n'est pas complet, il faut "bourrer"
-                    for(finOctet=0; offset<8; finOctet++){
+                if(offset != 8){ // Dans ce cas, le dernier byte n'est pas complet, il faut "bourrer"
+                    for(int j=0; offset<8; j++){
                         bits = bits << 1;
                         offset++;
                     }
-                    // Enregistrement du dernier octet (il y aura (8-finOctet) bits de bourrage dans le dernier octet)
-                    enteteEtContenuAEcrire[nombreBytesContenuAEcrire] = (byte)bits;
-                    nombreBytesContenuAEcrire++;
+                    
+                    // Enregistrement du dernier byte dans le tableau de bytes a ecrire (il y aura (8-j) bits de bourrage dans le dernier octet)
+                    enteteEtContenuAEcrire[nombreBytesEcrits] = (byte)bits;
+                    nombreBytesEcrits++;
                 }        
                
-                // Ecriture de l'entete et du contenu            
+                // Ecriture du nb de caracteres lus et differents et du tableau de bytes (entete et contenu)       
                 fichierTexteCompresse.write((String.valueOf(nbCaracteresLus)+';').getBytes());
                 fichierTexteCompresse.write((String.valueOf(nbCaracteresLusDifferents)+';').getBytes());
-                fichierTexteCompresse.write(enteteEtContenuAEcrire,0,nombreBytesContenuAEcrire);
+                fichierTexteCompresse.write(enteteEtContenuAEcrire,0,nombreBytesEcrits);
                 
-		//fichierTexte.close();
+		fichierTexteOriginal.close();
 		fichierTexteCompresse.close();
 
-		/*System.out
-				.println("Nombre de caracteres differents : "
-						+ codageLettres.length());*/
+		System.out.println("Nombre de caracteres differents : " + nbCaracteresLusDifferents);
 	}
+        
+       // private void lectureEnteteFichierCompresse
 
 	/**
 	 * Lit l'entete du texte qui a ete compresse Recree les couples de
@@ -175,8 +172,7 @@ public class TraitementFichier<E> {
                 int nbCaracteresALire;
                 String nbCaracteresLusDifferentsString = "";
                 int nbCaracteresDifferentsALire;
-                int i=0;
-                int j=0;
+                int i, j;
                 
                 for(i=0; buffer[i]!=';'; i++){
                     nbCaracteresLusString += buffer[i]-48;
@@ -206,10 +202,11 @@ public class TraitementFichier<E> {
 
                     for(i = i; nombreCaracteresEcritsFichierDecompresse < nbCaracteresALire; i++){  
                         for(j=7; (j >= 0) && (nombreCaracteresEcritsFichierDecompresse < nbCaracteresALire); j--){                    
-                            if((buffer[i] & masques[j]) == 0)
+                            if((buffer[i] & masques[j]) == 0){
                                 noeudTmp = noeudTmp.getFilsGauche();
-                            else
+                            }else{
                                 noeudTmp = noeudTmp.getFilsDroit();
+                            }
 
                             valNoeud = (Integer)noeudTmp.getVal();
 
@@ -220,24 +217,6 @@ public class TraitementFichier<E> {
                             }
                         }
                     }
-
-                    // Cas du dernier byte à écrire
-                    /*if(j != -1){ // Le dernier byte n'est pas terminé                  
-                        for(j = (7-j); j >= 0; j--){                    
-                            if((buffer[i-1] & masques[j]) == 0)
-                                    noeudTmp = noeudTmp.getFilsGauche();
-                            else
-                                    noeudTmp = noeudTmp.getFilsDroit();
-
-                            valNoeud = (Integer)noeudTmp.getVal();
-
-                            if(valNoeud != null){ // Ecriture du caractère
-                                    texteAEcrireFichierDecompresse[nombreCaracteresEcritsFichierDecompresse] = (byte)(int)valNoeud;
-                                    nombreCaracteresEcritsFichierDecompresse++;
-                                    noeudTmp = af.racine;
-                           }
-                        }  
-                    }*/
                     // ----- Fin de la lecture du texte code ----------------------------
 
                     fichierDecompresse.write(texteAEcrireFichierDecompresse);

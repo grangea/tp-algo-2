@@ -1,12 +1,12 @@
 package codagehuffman;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.PriorityQueue;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import arbre.ArbreHuffman;
 import arbre.Noeud;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.PriorityQueue;
 
 public class CodageHuffman {
 	/**
@@ -16,97 +16,90 @@ public class CodageHuffman {
 	 * @author Alice GRANGE & Romain LHORTOLAT
 	 */
 	private class PrioriteArbreHuffmanComparator implements
-			Comparator<ArbreHuffman> {
+			Comparator<ArbreHuffman<Integer>> {
 
 		@Override
-		public int compare(ArbreHuffman a1, ArbreHuffman a2) {
-			if (a1.getPriorite() > a2.getPriorite())
+		public int compare(ArbreHuffman<Integer> a1, ArbreHuffman<Integer> a2) {
+			if (a1.getPriorite() > a2.getPriorite()){
 				return 1;
-			else if (a1.getPriorite() < a2.getPriorite())
+                        }else if (a1.getPriorite() < a2.getPriorite()){
 				return -1;
-			else
+                        }else{
 				return 0;
+                        }
 		}
 
 	}
 
-	private Comparator comparator = new PrioriteArbreHuffmanComparator();
-	private PriorityQueue<ArbreHuffman> fileArbres = new PriorityQueue<ArbreHuffman>(
-			1000, comparator);
-	private TraitementFichier tf = new TraitementFichier();
-	private String nomFichier = "";
+	private PriorityQueue<ArbreHuffman> fileArbres;
+	private String nomFichierOriginal = "";
 	private String nomFichierModifie = "";
 
-	/*----------------------METHODES PRINCIPALES-----------------------*/
 	public CodageHuffman(String nomFichier, String nomFichierModifie) {
-		this.nomFichier = nomFichier;
+		this.nomFichierOriginal = nomFichier;
 		this.nomFichierModifie = nomFichierModifie;
 	}
 
 	public void compresserFichier() throws FileNotFoundException, IOException {
-		ArbreHuffman arbre = null;
+		ArbreHuffman<Integer> arbre;                
+                TraitementFichier tf = new TraitementFichier();
+                int nbCaracteresDifferentsLus = 0;
 
-                int nbCaracteresLus = tf.lireFichierACompresser(nomFichier);
-                System.out.println("Nombre de caracteres lus : " + nbCaracteresLus);
+                // Lecture du fichier original afin d'obtenir un tableau d'associations (code ascii - arbres de huffman)
+                int nbCaracteresLus = tf.lectureFichierOriginal(nomFichierOriginal);
+                System.out.println("Nombre de caracteres lus : " + nbCaracteresLus);                
                 
-                if(tf.tableauArbresHuffman.length > 0){
-                    for(int i=0; i<tf.tableauArbresHuffman.length; i++){
-                        if(tf.tableauArbresHuffman[i] != null){
-                            fileArbres.add((ArbreHuffman)tf.tableauArbresHuffman[i]);
+                if(tf.associationsCodeAsciiArbresHuffman.length > 0){ // Le fichier a ompresser n'est pas vide
+                    Comparator comparator = new PrioriteArbreHuffmanComparator();
+                    fileArbres = new PriorityQueue(tf.associationsCodeAsciiArbresHuffman.length, comparator);
+                    
+                    // Ajout de chaque arbre de huffman dans une file triée selon la priorité de l'arbre en quetion
+                    for(int i = 0; i < tf.associationsCodeAsciiArbresHuffman.length; i++){
+                        if(tf.associationsCodeAsciiArbresHuffman[i] != null){
+                            fileArbres.add((ArbreHuffman<Integer>)tf.associationsCodeAsciiArbresHuffman[i]);
+                            nbCaracteresDifferentsLus++;
                         }
                     }
 
-                    int nbCaracteresLusDifferents = fileArbres.size();
+                    // Création de l'arbre de Huffman final à partir des arbres de Huffman tries par priorite
                     arbre = creationArbreHuffman();
-                    tf.codageLettres = new LinkedHashMap<Integer,String>();
-                    arbre.paroursPrefixe(tf.codageLettres);
-                    tf.ecrireFichierACompresser(nomFichier, nomFichierModifie, nbCaracteresLus, nbCaracteresLusDifferents);
+                    
+                    // Parcours de l'arbre genere afin d'obtenir une liste chaînée d'associations (symbole - code de Huffma nassocié)
+                    tf.associationsCodeAsciiCodeHuffman = new LinkedHashMap();
+                    arbre.paroursPrefixe(tf.associationsCodeAsciiCodeHuffman);
+                    
+                    // Ecriture des caracteres du fichier original dans un fichier compresse (en les ayant traduit par leur code de Huffman associé)
+                    tf.ecritureFichierCompresse(nomFichierOriginal, nomFichierModifie, nbCaracteresLus, nbCaracteresDifferentsLus);
                 }
-
-                /*if (!fileArbres.isEmpty()
-                                && !tf.arbreHuffmanLettresFichier.isEmpty()) {
-                        arbre = creationArbreHuffman();
-                        if (arbre != null) {
-                                String entete = arbre
-                                                .remplissageTableauPrefixeRecursif(tf.codageLettres);
-                                tf.ecrireFichierACompresser(nomFichier, nomFichierModifie,
-                                                entete, nbCaracteresLus);
-                        }
-                }*/
 	}
 
 	public void decompresserFichier() throws FileNotFoundException, IOException {
-			tf.lireEcrireFichierADecompresser(nomFichier, nomFichierModifie);
+            TraitementFichier tf = new TraitementFichier();
+            tf.lireEcrireFichierADecompresser(nomFichierOriginal, nomFichierModifie);
 	}
 
-	/*----------------------METHODES SUBORDONNEES-----------------------*/
-	private ArbreHuffman creationArbreHuffman() {
+	private ArbreHuffman<Integer> creationArbreHuffman() {
+		ArbreHuffman<Integer> arbreLePlusPrioritaire = null;
+		ArbreHuffman<Integer> secondArbreLePlusPrioritaire;
+		ArbreHuffman<Integer> nouvelArbre;
 
-		ArbreHuffman a1 = null;
-		ArbreHuffman a2 = null;
-		ArbreHuffman a3 = null;
-		Noeud nvelleracine = null;
-
-		// tant que la priorityqueue a plus qu'un element, fusion entre
-		// les arbres
+		// tant que la file de priorite n'est pas vide, on fusionne les deux arbres les plus prioritaires
 		while (!fileArbres.isEmpty()) {
+			// On recupere l'element avec le poids le plus faible donc le plus prioritaire
+			arbreLePlusPrioritaire = fileArbres.poll();
 
-			// On recupere l'element avec le poids le plus faible donc le
-			// plus prioritaire
-			a1 = fileArbres.poll();
-
-			if (!fileArbres.isEmpty()) { // Il reste au moins un element
-				a2 = fileArbres.poll();
-				// On cree le nouvel arbre avec les deux arbres restants
-				nvelleracine = new Noeud<Character>(null, a1.getRacine(), a2.getRacine());
-				a3 = new ArbreHuffman<Character>(nvelleracine, a1.getPriorite()
-						+ a2.getPriorite());
-				fileArbres.add(a3);
-			} else { // Il ne reste aucun element
+			if (!fileArbres.isEmpty()) { // Il reste au moins un element dans la file de priorite                                
+				secondArbreLePlusPrioritaire = fileArbres.poll(); // On recupere l'element avec le poids le plus faible donc le plus prioritaire                                
+				
+				nouvelArbre = new ArbreHuffman<Integer>(new Noeud<Integer>(null, arbreLePlusPrioritaire.getRacine(), secondArbreLePlusPrioritaire.getRacine()), 
+                                                                arbreLePlusPrioritaire.getPriorite() + secondArbreLePlusPrioritaire.getPriorite());
+                                fileArbres.add(nouvelArbre); // On cree le nouvel arbre a partir des deux arbres les plus prioritaires dans la file
+			} else { // Il ne reste plus d'elements dans la file de priorite
 				break;
 			}
 		}
-		return a1;
+                
+		return arbreLePlusPrioritaire;
 	}
 
 }

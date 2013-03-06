@@ -1,7 +1,5 @@
 package arbre;
 
-import arbre.Noeud;
-
 import java.util.LinkedHashMap;
 
 public class Noeud<E> {
@@ -55,7 +53,7 @@ public class Noeud<E> {
 	}
 
 	/**
-	 * Renvoie la valeur contenue sur ce noeud
+	 * Renvoie la valeur contenue par ce noeud
 	 * 
 	 * @return valeur portee sur ce noeud
 	 * */
@@ -82,118 +80,64 @@ public class Noeud<E> {
 	}
 
 	/**
-	 * Renvoie la hauteur du noeud
-	 * 
-	 * @return la hauteur a laquelle se trouve ce noeud
-	 */
-	public int hauteur() {
-		int hauteurSousArbreGauche = -1;
-		int hauteurSousArbreDroit = -1;
-
-		if (this.filsGauche != null) {
-			hauteurSousArbreGauche = filsGauche.hauteur();
-		}
-		if (this.filsDroit != null) {
-			hauteurSousArbreDroit = filsDroit.hauteur();
-		}
-
-		return (1 + Math.max(hauteurSousArbreGauche, hauteurSousArbreDroit));
-	}
-
-	/**
-	 * Renvoie le nombre de noeuds a partir de ce noeud
-	 * 
-	 * @return nombre de noeuds
-	 */
-	public int nbNoeudsHuffman() {
-		int nombreNoeudsSousArbreGauche = 0;
-		int nombreNoeudsSousArbreDroit = 0;
-
-		if (this.filsGauche != null) {
-			nombreNoeudsSousArbreGauche = filsGauche.nbNoeudsHuffman();
-		}
-		if (this.filsDroit != null) {
-			nombreNoeudsSousArbreDroit = filsDroit.nbNoeudsHuffman();
-		}
-		if (val != null) { // Un arbre de Huffman peut contenir des racines dont
-							// la valeur est nulle
-			return (1 + nombreNoeudsSousArbreGauche + nombreNoeudsSousArbreDroit);
-		} else {
-			return (nombreNoeudsSousArbreGauche + nombreNoeudsSousArbreDroit);
-		}
-	}
-
-	/**
-	 * Renvoie une chaine de caractere contenant les valeurs contenues sur le
-	 * noeud et ses fils
+	 * Ajoute une entrée dans la liste chaînée codageLettres si ce noeud est une racine
+         * sinon se déplace récursivement dans ses fils de manière préfixée
 	 * 
 	 * @param linkedHashMap
 	 *            <String,Integer>
-	 * @return chaine de caractere contenant la valeur de ce noeud + taille du
-	 *         code cree
 	 */
-	public String parcoursPrefixe(LinkedHashMap<Integer, String> codageLettres,
-			String code) {
-		String s = "";
-		String s2 = "";
-		// int h = hauteur + 1;
+	public void parcoursPrefixe(LinkedHashMap<Integer, String> codageLettres,
+			String codeCaractere) {
+		String codeCaractereTmp;
 
-		if (this.filsGauche == null && this.filsDroit == null
-				&& this.val != null) { // feuille
-			int l = code.length();
-			// s2 = code;
-			// s2 += "|" + val + "|" + h + "|";
-			s2 += val + "|" + (byte) (l + 48) + "|";
-
-			codageLettres.put((Integer) val, code);
+		if (this.filsGauche == null && this.filsDroit == null && this.val != null) { // il s'agit d'une feuille
+			codageLettres.put((Integer) val, codeCaractere);
 		}
-		if (this.filsGauche != null) {
-			s = code;
-			s += "0";
-			s2 += filsGauche.parcoursPrefixe(codageLettres, s);
+		if (this.filsGauche != null) { // on traite le sous-arbre gauche
+			codeCaractereTmp = codeCaractere;
+			codeCaractereTmp += "0";
+			filsGauche.parcoursPrefixe(codageLettres, codeCaractereTmp);
 		}
-		if (this.filsDroit != null) {
-			s = code;
-			s += "1";
-			s2 += filsDroit.parcoursPrefixe(codageLettres, s);
+		if (this.filsDroit != null) { // on traite le sous-arbre droit
+			codeCaractereTmp = codeCaractere;
+			codeCaractereTmp += "1";
+			filsDroit.parcoursPrefixe(codageLettres, codeCaractereTmp);
 		}
-
-		return s2;
 	}
 
 	/**
-	 * Renvoie le noeud insere
+	 * Insere un noeud dans l'arbre a la hauteur souhaitee
 	 * 
-	 * @param la
-	 *            valeur du noeud
-	 * @param la
-	 *            hauteur a laquelle doit se trouver le noeud
-	 * @return ce noeud cree et insere
+	 * @param val
+	 *            valeur du noeud a inserer
+	 * @param hauteur
+	 *            hauteur a laquelle doit etre insere le noeud
+	 * @return le noeud insere a l'endroit correct
 	 */
-	public Noeud<E> insererHuffman(E val, int hauteur) {
+	public Noeud<E> insererNoeudHauteurPrecise(E val, int hauteur) {
 		Noeud<E> retour = null;
 		if (hauteur == 1) {
 			if (filsGauche == null) {
-				filsGauche = new Noeud<E>(val);
+				filsGauche = new Noeud(val);
 				retour = filsGauche;
 			} else if (filsDroit == null) {
-				filsDroit = new Noeud<E>(val);
+				filsDroit = new Noeud(val);
 				retour = filsDroit;
 			}
 		} else {
 			if (filsGauche == null) {
-				filsGauche = new Noeud<E>();
+				filsGauche = new Noeud();
 			}
 			if (filsGauche.val == null) {
-				retour = filsGauche.insererHuffman(val, hauteur - 1);
+				retour = filsGauche.insererNoeudHauteurPrecise(val, hauteur - 1);
 			}
 
 			if (retour == null) {
 				if (filsDroit == null) {
-					filsDroit = new Noeud<E>();
+					filsDroit = new Noeud();
 				}
 				if (filsDroit.val == null) {
-					retour = filsDroit.insererHuffman(val, hauteur - 1);
+					retour = filsDroit.insererNoeudHauteurPrecise(val, hauteur - 1);
 				}
 			}
 		}

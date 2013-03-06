@@ -1,7 +1,5 @@
 package arbre;
 
-import arbre.Arbre;
-import arbre.ArbreBinaire;
 import java.util.LinkedHashMap;
 
 public class ArbreBinaire<E> extends Arbre<E> {
@@ -18,23 +16,24 @@ public class ArbreBinaire<E> extends Arbre<E> {
 	}
 
 	/**
-	 * Cree un arbre binaire compose d'une racine
+	 * Cree un arbre binaire dont la racine a la valeur val et les fils sont null
 	 * 
-	 * @param sa
-	 *            valeur portee sur la racine
+	 * @param val
+	 *            valeur portee par la racine
 	 */
 	public ArbreBinaire(E val) {
 		super(val);
 	}
 
 	/**
-	 * Cree un arbre binaire non vide
+	 * Cree un arbre binaire dont la racine a la valeur val, le fils gauche 
+         * filsGauche et le fils droit filsDroit
 	 * 
-	 * @param sa
-	 *            valeur portee sur la racine
-	 * @param son
+	 * @param val
+	 *            valeur portee par la racine
+	 * @param filsGauche
 	 *            sous-arbre gauche
-	 * @param son
+	 * @param filsDroit
 	 *            sous-arbre droit
 	 */
 	public ArbreBinaire(E val, ArbreBinaire<E> filsGauche,
@@ -42,23 +41,24 @@ public class ArbreBinaire<E> extends Arbre<E> {
 		Noeud<E> noeudFilsGauche = null;
 		Noeud<E> noeudFilsDroit = null;
 
-		if (filsGauche != null) {
-			// arbre gauche non vide
+		if (filsGauche != null) { // arbre gauche non vide			
 			noeudFilsGauche = filsGauche.getRacine();
 		}
-		if (filsDroit != null) {
-			// arbre droit non vide
+		if (filsDroit != null) { // arbre droit non vide			
 			noeudFilsDroit = filsDroit.getRacine();
 		}
 
-		Noeud<E> racine = new Noeud<E>(val, noeudFilsGauche, noeudFilsDroit);
+		Noeud<E> racine = new Noeud(val, noeudFilsGauche, noeudFilsDroit);
 		this.setRacine(racine);
 	}
 
 	/**
-	 * Realise le parcours prefixe de l'arbre binaire
+	 * Remplie la liste chaînée codageLettres par des entrées 
+         * (code ascii - code du caractère obtenu a l'aide de l'arbre de Huffman)
+         * de manière préfixée : les noeuds de l'arbre les plus à gauche seront en 
+         * tête de liste alors que les noeuds les plus à droite seront en fin de liste
 	 * 
-	 * @param une
+	 * @param codageLettres
 	 *            linkedHashMap<Integer,String>
 	 * */
 	public void paroursPrefixe(LinkedHashMap<Integer, String> codageLettres) {
@@ -68,19 +68,20 @@ public class ArbreBinaire<E> extends Arbre<E> {
 	}
 
 	/**
-	 * Insere un noeud a la bonne hauteur dans cet arbre binaire
+	 * Insere un noeud a la bonne hauteur dans cet arbre binaire 
+         * en parcourant à partir de la racine
 	 * 
 	 * @param valeur
 	 *            portee par le noeud
 	 * @param hauteur
 	 *            a laquelle doit etre le noeud
-	 * @return noeud cree
+	 * @return noeud insere dans l'arbre binaire
 	 * */
 	public Noeud<E> insererNoeudHauteurPrecise(E val, int hauteur) {
 		if (estVide())
-			setRacine(new Noeud<E>());
+			setRacine(new Noeud());
 
-		return getRacine().insererHuffman(val, hauteur);
+		return getRacine().insererNoeudHauteurPrecise(val, hauteur);
 	}
 
 }

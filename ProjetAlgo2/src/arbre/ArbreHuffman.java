@@ -1,10 +1,8 @@
 package arbre;
 
-import arbre.ArbreBinaire;
-
 public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	/**
-	 * @brief Gere un arbre de huffman c'est a dire un arbre binaire particulier
+	 * @brief Gere un arbre de huffman c'est a dire un arbre binaire contenant une priorite
 	 *        compose d'une priorite
 	 * @date Fevrier 2013
 	 * @author Alice GRANGE & Romain LHORTOLAT
@@ -19,19 +17,19 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	}
 
 	/**
-	 * Cree un arbre de huffman non vide de priorite 1
+	 * Cree un arbre de huffman dont la racine a la valeur val et une priorite 1
 	 * 
 	 * @param valeur
 	 *            portee par sa racine
 	 * */
 	public ArbreHuffman(E val) {
-		Noeud<E> racine = new Noeud<E>(val);
+		Noeud<E> racine = new Noeud(val);
 		this.setRacine(racine);
 		this.priorite = 1;
 	}
 
 	/**
-	 * Cree un arbre de huffman non vide
+	 * Cree un arbre de huffman dont la racine a la valeur val et une priorite egale à priorite
 	 * 
 	 * @param valeur
 	 *            portee par la racine
@@ -39,7 +37,7 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	 *            de cet arbre
 	 */
 	public ArbreHuffman(E val, int priorite) {
-		Noeud<E> racine = new Noeud<E>(val);
+		Noeud<E> racine = new Noeud(val);
 		this.setRacine(racine);
 		this.priorite = priorite;
 	}
@@ -66,16 +64,9 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 		return this.priorite;
 	}
 
-	/** Incremente d'un la priorite de cet arbre de huffman */
+	/** Incremente d'une unité la priorite de cet arbre de huffman */
 	public void incrementerPriorite() {
 		this.priorite++;
-	}
-
-	/** Retourne le nombre de noeuds que porte cet arbre */
-	public int nbNoeuds() {
-		if (estVide())
-			return 0;
-		return getRacine().nbNoeudsHuffman();
 	}
 
 }

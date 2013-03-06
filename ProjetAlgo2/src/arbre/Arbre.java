@@ -11,33 +11,33 @@ abstract class Arbre<E> {
 
 	/** Cree un arbre vide */
 	public Arbre() {
-		this.setRacine(null);
+		this.racine = null;
 	}
 
 	/**
-	 * Cree un arbre non vide
+	 * Cree un arbre dont la racine a la valeur val
 	 * 
-	 * @param la
-	 *            valeur contenue sur la racine
+	 * @param val
+	 *            valeur contenue par la racine
 	 */
 	public Arbre(E val) {
-		this.setRacine(new Noeud<E>(val));
+		this.racine = new Noeud(val);
 	}
 
 	/**
 	 * Teste si cet arbre est vide
 	 * 
-	 * @return vrai si cet arbre est vide / Faux sinon
+	 * @return vrai si cet arbre est vide ou faux sinon
 	 */
 	public boolean estVide() {
 		return getRacine() == null;
 	}
 
 	/**
-	 * Modifie la valeur contenue sur sa racine
+	 * Modifie la racine de l'arbre
 	 * 
-	 * @param sa
-	 *            racine
+	 * @param racine
+	 *            la racine qui va remplacer la racine actuelle de l'arbre
 	 */
 	public void setRacine(Noeud<E> racine) {
 		this.racine = racine;
