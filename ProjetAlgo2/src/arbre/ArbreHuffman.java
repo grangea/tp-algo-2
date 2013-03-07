@@ -19,11 +19,11 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	/**
 	 * Cree un arbre de huffman dont la racine a la valeur val et une priorite 1
 	 * 
-	 * @param valeur
-	 *            portee par sa racine
+	 * @param val
+	 *           valeur portee par sa racine
 	 * */
 	public ArbreHuffman(E val) {
-		Noeud<E> racine = new Noeud<E>(val);
+		Noeud<E> racine = new Noeud(val);
 		this.setRacine(racine);
 		this.priorite = 1;
 	}
@@ -31,13 +31,13 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	/**
 	 * Cree un arbre de huffman dont la racine a la valeur val et une priorite egale à priorite
 	 * 
-	 * @param valeur
-	 *            portee par la racine
+	 * @param val
+	 *            aleur portee par la racine
 	 * @param priorite
-	 *            de cet arbre
+	 *            priorite de cet arbre
 	 */
 	public ArbreHuffman(E val, int priorite) {
-		Noeud<E> racine = new Noeud<E>(val);
+		Noeud<E> racine = new Noeud(val);
 		this.setRacine(racine);
 		this.priorite = priorite;
 	}
@@ -46,9 +46,9 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	 * Cree un arbre de huffman non vide
 	 * 
 	 * @param noeud
-	 *            formant la racine
+	 *            noeud formant la racine
 	 * @param priorite
-	 *            de cet arbre
+	 *            priorite de cet arbre
 	 */
 	public ArbreHuffman(Noeud<E> racine, int priorite) {
 		this.setRacine(racine);
@@ -58,7 +58,7 @@ public class ArbreHuffman<E> extends ArbreBinaire<E> {
 	/**
 	 * Retourne la priorite de cet arbre de huffman
 	 * 
-	 * @return sa priorite
+	 * @return a priorite de l'arbre
 	 */
 	public int getPriorite() {
 		return this.priorite;

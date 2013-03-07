@@ -16,6 +16,11 @@ public class CodageHuffman {
 	 * @date   Fevrier 2013
 	 * @author Alice GRANGE & Romain LHORTOLAT
 	 */
+    
+        /**
+        * Comparateur utilise pour la comparaison de deux arbres de Huffman dans la file de priorite;
+        * La comparaison est faite sur la priorite de l'arbre de Huffman.
+        */
 	private class PrioriteArbreHuffmanComparator implements
 			Comparator<ArbreHuffman<Integer>> {
 
@@ -32,17 +37,48 @@ public class CodageHuffman {
 
 	}
 
+        /**
+        * File de priorite utilisee pour stocker des arbres de Huffman de maniere triee selon
+        * la priorite contenue par l'arbre.
+        */
 	private PriorityQueue<ArbreHuffman<Integer>> fileArbres;
+        
+        /**
+        * Nom du fichier à modifier (qui va etre compresse ou decompresse)
+        */
 	private String nomFichierAModifier = "";
+        
+        /**
+        * Nom du fichier modifie (qui est issu d'une compression ou d'une decompression)
+        */
 	private String nomFichierModifie = "";
+        
+        /**
+        * Permet des traitements sur les fichiers (tels que l'ecriture ou la lecture)
+        */
         private TraitementFichier traitementFichier;
 
+        /**
+	 * Cree une instance d'un codage de huffman
+	 * 
+	 * @param nomFichierAModifier
+	 *            nom du fichier a modifier
+         * @param nomFichierModifie
+	 *            nom du fichier modifie
+         * 
+	 */
 	public CodageHuffman(String nomFichierAModifier, String nomFichierModifie) {
 		this.nomFichierAModifier = nomFichierAModifier;
 		this.nomFichierModifie = nomFichierModifie;
 	}
 
-	public void compresserFichier() throws FileNotFoundException, IOException {
+         /**
+	 * Compresse un fichier en lisant le fichier original puis en generant un arbre de Huffman 
+         * a partir des caracteres lus. Cet arbre va permettre de traduire les caracteres du fichier original
+         * afin de les reecrire de maniere compresse.
+	 * 
+	 */
+	public void compresserFichier() throws FileNotFoundException, IOException, Exception {
                 traitementFichier = new TraitementFichier();
 		ArbreHuffman<Integer> arbre;           
                 int nbCaracteresDifferentsLus = 0;
@@ -66,7 +102,7 @@ public class CodageHuffman {
                     // Création de l'arbre de Huffman final à partir des arbres de Huffman tries par priorite
                     arbre = creationArbreHuffman();
                     
-                    // Parcours de l'arbre genere afin d'obtenir une liste chaînée d'associations (symbole - code de Huffma nassocié)
+                    // Parcours de l'arbre genere afin d'obtenir une liste chaînee d'associations (symbole - code de Huffman nassocié)
                     traitementFichier.associationsCodeAsciiCodeHuffman = new LinkedHashMap();
                     arbre.paroursPrefixe(traitementFichier.associationsCodeAsciiCodeHuffman);
                     
@@ -75,11 +111,21 @@ public class CodageHuffman {
                 }
 	}
 
+        /**
+	 * Decompresse un fichier en lisant l'entete du fichier compresse puis en generant un arbre 
+         * a partir de cette entete. Cet arbre va permettre de traduire les caracteres codes du fichier 
+         * original en caractere du code ASCII afin de les reecrire de maniere decompressee.
+	 * 
+	 */
 	public void decompresserFichier() throws FileNotFoundException, IOException {
             ArbreBinaire<Integer> arbre = recreationArbre();
             traitementFichier.ecritureFichierDecompresse(nomFichierAModifier, nomFichierModifie, arbre);
 	}
 
+        /**
+	 * Genere un arbre de Huffman final a partir d'une file d'arbres de Huffman tries par priorite
+	 * 
+	 */
 	private ArbreHuffman<Integer> creationArbreHuffman() {
 		ArbreHuffman<Integer> arbreLePlusPrioritaire = null;
 		ArbreHuffman<Integer> secondArbreLePlusPrioritaire;
@@ -93,7 +139,7 @@ public class CodageHuffman {
 			if (!fileArbres.isEmpty()) { // Il reste au moins un element dans la file de priorite                                
 				secondArbreLePlusPrioritaire = fileArbres.poll(); // On recupere l'element avec le poids le plus faible donc le plus prioritaire                                
 				
-				nouvelArbre = new ArbreHuffman<Integer>(new Noeud<Integer>(null, arbreLePlusPrioritaire.getRacine(), secondArbreLePlusPrioritaire.getRacine()), 
+				nouvelArbre = new ArbreHuffman(new Noeud(null, arbreLePlusPrioritaire.getRacine(), secondArbreLePlusPrioritaire.getRacine()), 
                                                                 arbreLePlusPrioritaire.getPriorite() + secondArbreLePlusPrioritaire.getPriorite());
                                 fileArbres.add(nouvelArbre); // On cree le nouvel arbre a partir des deux arbres les plus prioritaires dans la file
 			} else { // Il ne reste plus d'elements dans la file de priorite
@@ -104,6 +150,13 @@ public class CodageHuffman {
 		return arbreLePlusPrioritaire;
 	}
         
+        /**
+	 * Genere un arbre a partir des couples (code ASCII - longueur du code de Huffman associé) lus dans l'entete
+         * du fichier a decompresser.
+         * 
+	 * @return l'arbre genere
+         *  
+	 */
         private ArbreBinaire<Integer> recreationArbre() throws FileNotFoundException, IOException{
             traitementFichier = new TraitementFichier();
             return traitementFichier.lectureEnteteFichierCompresse(nomFichierAModifier);

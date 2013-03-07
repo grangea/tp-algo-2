@@ -48,22 +48,23 @@ public class ArbreBinaire<E> extends Arbre<E> {
 			noeudFilsDroit = filsDroit.getRacine();
 		}
 
-		Noeud<E> racine = new Noeud<E>(val, noeudFilsGauche, noeudFilsDroit);
+		Noeud<E> racine = new Noeud(val, noeudFilsGauche, noeudFilsDroit);
 		this.setRacine(racine);
 	}
 
 	/**
-	 * Remplie la liste chaînée codageLettres par des entrées 
+	 * Remplie la liste chaînée associationsCodeAsciiCodeHuffman par des entrées 
          * (code ascii - code du caractère obtenu a l'aide de l'arbre de Huffman)
          * de manière préfixée : les noeuds de l'arbre les plus à gauche seront en 
          * tête de liste alors que les noeuds les plus à droite seront en fin de liste
 	 * 
-	 * @param codageLettres
-	 *            linkedHashMap<Integer,String>
+	 * @param associationsCodeAsciiCodeHuffman
+	 *            liste chainee d'associations code ascii (cle) - code de huffman (valeur)
+         * 
 	 * */
-	public void paroursPrefixe(LinkedHashMap<Integer, String> codageLettres) {
+	public void paroursPrefixe(LinkedHashMap<Integer, String> associationsCodeAsciiCodeHuffman) {
 		if (!estVide()) {
-			getRacine().parcoursPrefixe(codageLettres, "");
+			getRacine().parcoursPrefixe(associationsCodeAsciiCodeHuffman, "");
 		}
 	}
 
@@ -78,8 +79,9 @@ public class ArbreBinaire<E> extends Arbre<E> {
 	 * @return noeud insere dans l'arbre binaire
 	 * */
 	public Noeud<E> insererNoeudHauteurPrecise(E val, int hauteur) {
-		if (estVide())
-			setRacine(new Noeud<E>());
+		if (estVide()){
+			setRacine(new Noeud());
+                }
 
 		return getRacine().insererNoeudHauteurPrecise(val, hauteur);
 	}
